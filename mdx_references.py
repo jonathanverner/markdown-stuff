@@ -107,6 +107,7 @@ class BlockNumberingProcessor(Treeprocessor):
           number.text = self.labels[child.get('key','')]
           number.set('href','#'+self.labels[child.get('key','')])
         except:
+          logger.warn('Undefined reference \''+child.get('key')+"'")
           number.text = '??'
       else:
         self._recursive_ref(child)
