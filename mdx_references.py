@@ -51,16 +51,21 @@ class BlockNumberingProcessor(Treeprocessor):
     logger.warn('SECTION: '+str(self.current_section_tuple)+'='+self.section_number())
     if depth < len(self.current_section_tuple):
       self.current_section_tuple[depth]+=1
-      for i in range(depth+1,self.depth_limit):
-        self.current_section_tuple[i]=0
+      self.current_section_tuple = self.current_section_tuple[:depth+1]
     else:
       self.current_section_tuple.append(1)
+    if depth < self.depth_limit:
+        self.clear_numbering()
     return True
 
   def section_number(self,depth=None):
     if depth is None:
       depth = len(self.current_section_tuple)
     return '.'.join(map(lambda x:str(x),self.current_section_tuple[:depth]))
+
+  def clear_numbering(self):
+      for k in self.current_numbering:
+          self.current_numbering[k]=0
 
   def block_number(self,typ):
     if not self.number_by_type:
