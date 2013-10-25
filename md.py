@@ -44,7 +44,7 @@ def main():
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
 
   args = parser.parse_args()
-  logger =  logging.getLogger(__name__)
+  logger =  logging.getLogger("md")
   root_logger = logging.getLogger()
   root_logger.setLevel(logging.FATAL-args.verbose*10)
 
