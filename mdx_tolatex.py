@@ -5,7 +5,7 @@ import re
 
 logger =  logging.getLogger(__name__)
 
-class laTeXRenderer():
+class laTeXRenderer(object):
   def __init__(self):
     self.preserve_underscores = False
 
