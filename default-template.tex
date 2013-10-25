@@ -1,0 +1,78 @@
+{% autoescape off %}
+\documentclass[a4paper,10pt,oneside]{article}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage[bookmarks, colorlinks=false, 
+            pdftitle={ {{ title }}  },
+            pdfauthor={ {{ author }} }, 
+            pdfsubject={  {{ subject }} }, 
+            pdfkeywords={ {{ keywords }} }
+            ]{hyperref}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\relpenalty=9999
+\binoppenalty=9999
+
+
+%----------definitions---------------------------
+
+
+%math definitions
+
+
+%---------numbering of the theorems------------
+ \swapnumbers
+
+ \newtheorem*{theorem*}{Theorem}
+ \newtheorem{theorem}[subsection]{Theorem}
+ \newtheorem{proposition}[subsection]{Proposition}
+ \newtheorem{observation}[subsection]{Observation}
+ \newtheorem{fact}[subsection]{Fact}
+ \newtheorem{lemma}[subsection]{Lemma}
+ \theoremstyle{definition}
+ \newtheorem{definition}[subsection]{Definition}
+ \newtheorem{question}[subsection]{Problem}
+ \newtheorem{example}[subsection]{Example}
+ \newtheorem{excercise}[subsection]{Excercise}
+ \newtheorem*{definition*}{Definice}
+ \newtheorem*{question*}{Question}
+ \newtheorem{notation}[subsection]{Notation}
+ \newtheorem{remark}[subsection]{Remark}
+ \newtheorem*{note}{Note}
+ \newtheorem*{ack}{Acknowledgements}
+ 
+\include{pythonlisting}
+\lstset{
+numbers=left,
+stepnumber=1,
+numbersep=5pt,
+numberstyle=\small\color{black}
+}
+%-------------opening--------------------------
+
+\parindent=0cm
+\begin{document}
+
+{% if title %}
+\title{ {{ title }} }
+{% if date %}
+\date{ {{ date }} }
+{% endif %}{% if author %}
+\author{ {{ author }} }
+{% endif %}{% if email %}
+%\email{ {{ email }} }
+{% endif %}
+
+\maketitle
+{% endif %}
+
+{{ content }}
+
+\end{document}
+
+{% endautoescape %}

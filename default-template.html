@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+ <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8" />
+
+<!-- BOOTSTRAP CSS -->
+<link 
+href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" 
+rel="stylesheet" />
+
+<!-- MD CSS -->
+<link rel='stylesheet' href='{{ css_path }}md.css' />
+
+<!-- JQUERY -->
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+<!-- BOOTSTRAP JSCRIPT -->
+<script 
+src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+<!-- POPOVER SCRIPT -->
+<script>
+function enablePopOvers() { 
+  $('.reference_number').each( function(index, E) {
+    var target = document.getElementById($(E).attr('href').slice(1));
+    jqT = $(target)
+    var target_type = jqT.attr('type');
+    var target_number = jqT.attr('id');
+    var target_content = ""
+    $(target.children).not('.block_heading').each(function() {
+      target_content += $(this).html();
+    });
+    var title = "<span class='block_heading' type='"+target_type+"'>"+
+            "<span class='block_number'>"+target_number+"</span>"+
+	    "</span>";
+    jqE = $(E)
+    jqE.attr('data-content',target_content);
+    jqE.attr('data-html',true);
+    jqE.attr('data-trigger','hover');
+    jqE.attr('data-title',title)
+  });
+  $('.reference_number').popover();
+}
+jQuery(document).ready( function () {
+  MathJax.Hub.Queue(function() {
+    enablePopOvers();
+  });
+})
+
+</script>
+
+<!-- MATHJAX -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" 
+src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-
+MML_HTMLorMML"></script>
+
+<style>
+{% autoescape off %}
+
+{{ headings_css }}
+
+{% endautoescape %}
+</style>
+
+{% if title %}
+<title> {{ title }} </title>
+{% endif %}{% if author %}
+<meta name='Author' content='{{ author }}' />
+{% endif %}{% if subject %}
+<meta name='Subject' content='{{ subject }}' />
+{% endif %}{% if keywords %}
+<meta name='keywords' content='{{ keywords }}' />
+{% endif %}
+</head>
+<body>
+
+{% if title %}
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="navbar-header">
+    <a class="navbar-brand" href="#">
+      <h3>{{ title }}</h3>
+    
+      {% if author %}
+      <h4><i> {{ author }}</i></h4>
+      {% endif %}
+    </a>
+  </div>
+</nav>
+
+
+{% endif %}
+
+<div id='toc'>
+</div> <!-- toc -->
+
+<div id='article'>
+
+{% autoescape off %}
+{{ content }}
+{% endautoescape %}
+
+</div> <!-- article -->
+
+</body>
+</html>
