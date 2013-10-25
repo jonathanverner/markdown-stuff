@@ -54,7 +54,7 @@ class laTeXRenderer():
       elif child.tag == 'em':
         output+='\\emph{'+self._escape(child.text).strip()+self._render(child).strip()+'}'
       elif child.tag == 'strong':
-        output+='{\bf '+self._escape(child.text).strip()+self._render(child).strip()+'}'
+        output+='{\\bf '+self._escape(child.text).strip()+self._render(child).strip()+'}'
       elif child.tag == 'ref':
         key = child.get('key','')
         output+='\\ref{'+key+'}'
