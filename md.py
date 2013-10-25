@@ -4,6 +4,8 @@ import os
 
 import markdown
 from markdown.util import etree
+import lxml
+from lxml.cssselect import CSSSelector
 from  mdx_tolatex import laTeXRenderer
 from mdx_defs import build_headings_css
 import django.conf
@@ -12,6 +14,16 @@ import logging
 
 logging.basicConfig()
 django.conf.settings.configure()
+
+def text_content(element):
+    ret = ''
+    if element.text:
+        ret += element.text
+    for c in element:
+        ret += ' '+ text_content(c)
+    if element.tail:
+        ret += element.tail
+    return ret
 
 def main():
   format_exts = {
@@ -25,6 +37,9 @@ def main():
   parser.add_argument('-o', '--output', type=argparse.FileType('w'),help='output file')
   parser.add_argument('-f', '--format',help='output format', choices=['html','latex'],default='html')
   parser.add_argument('-s', '--subs',help='template substitutions',default='')
+  parser.add_argument('--filter',help='process only elements matching a given css selector',default=None)
+  parser.add_argument('-q', '--query',help='print out elements matching a given css selector')
+  parser.add_argument('--full',help='print out elements matching a given css selector',action='store_true')
   parser.add_argument('--verbose', '-v', action='count',help='be verbose',default=0)
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
 
@@ -51,9 +66,36 @@ def main():
 
   md = markdown.Markdown(extensions=['extra','defs','mymathjax','outline','semanticwikilinks','headerid','references','meta'])
   html = md.convert( unicode(args.document.read(),encoding='utf-8',errors='ignore') )
+
+  if args.query:
+      try:
+          selector = CSSSelector(args.query)
+      except Exception, e:
+          logger.critical("Error parsing query: "+args.query+" ("+str(e)+")")
+          exit(-1)
+      html_tree = lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+      for e in selector(html_tree):
+          print e.tag, e.attrib
+          if args.full:
+              print "-"*80
+              print text_content(e),
+              print "-"*80
+      return
+
+  if args.filter:
+      try:
+          selector = CSSSelector(args.filter)
+      except Exception, e:
+          logger.critical("Error parsing filter: "+args.query+" ("+str(e)+")")
+          exit(-1)
+      html_tree = lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+      html = '\n'.join([lxml.etree.tostring(e) for e in selector(html_tree)])
+
+
   html_tree = etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
 
   dct = {}
+
   if args.format == 'html':
     output = html
     dct['headings_css'] = build_headings_css(html_tree,position='after')
