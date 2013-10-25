@@ -1,0 +1,114 @@
+#navbar {
+  left : 0px ;
+  position : fixed ;
+  top : 0px ;
+  width : 100% ;
+  padding-left:30px;
+  padding-bottom:10px;
+  background: #404040;
+  color:white;
+}
+
+.navbar a {
+    color:white;
+    text-decoration:none;
+}
+
+.navbar h3 {
+    color:white;
+}
+
+body { 
+  padding-top: 70px;
+  background:gray;
+}
+
+:target {
+  padding-top:120px;
+}
+
+/* Have gray background around the article */
+#article {
+  background:white;
+  padding-top:70px;
+  padding-bottom:70px;
+  margin-left:10px;
+  margin-right:10px;
+  padding-left:50px;
+  padding-right:50px;
+}
+
+/* Center images */
+img {
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.section_number:after {
+  content:' '
+}
+
+.block_heading {
+ font-weight:bold;
+}
+
+.block_number:before {
+  content:' '
+}
+
+.block_number:after {
+  content:' '
+}
+
+.block_references {
+  font-style:normal;
+}
+
+.block_references:before {
+  content:' ['
+}
+
+.block_references:after {
+  content:'] '
+}
+
+.block_name {
+  font-style:italic;
+}
+
+.block_name:before {
+  content:' ('
+}
+
+.block_name:after {
+  content:') '
+}
+
+.Theorem {
+  font-style:italic;
+}
+
+.Theorem .block_heading {
+  font-style:normal;
+}
+
+.block {
+ margin-top:1em;
+ margin-bottom:1em;
+}
+
+.block p {
+  display:inline;
+}
+
+h1 {
+  text-align:center;
+}
+
+h1 .section_number {
+  display:none;
+}
+
+
+
