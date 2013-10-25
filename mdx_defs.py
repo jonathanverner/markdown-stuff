@@ -61,7 +61,8 @@ class DefinitionBlockProcessor(BlockProcessor):
 
   END_RE = re.compile(r'(.*){}\s*$', re.DOTALL)
 
-  BLOCKTYPES = ['Theorem','Proposition','Lemma','Fact','Observation','Definition','Example','Remark']
+  # FIXME: This should not be hardcoded !!!
+  BLOCKTYPES = ['Theorem','Proposition','Lemma','Fact','Observation','Definition','Example','Remark','Note','Excercise']
 
 
   def test(self, parent, block):
