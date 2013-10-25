@@ -12,8 +12,9 @@
 <!DOCTYPE language SYSTEM "language.dtd"
 [
 <!--<!ENTITY definitionblockregex "^\s*(\{#[^}]*\})?\s*([A-Z]\w*)\s*(\([^)]*\)?:">-->
-<!ENTITY definitionblockregex "^\s*(\{#[^}]*\})?\s*([A-Z]\w*)\s*(\([^)]*\))?:">
+<!ENTITY definitionblockregex "^\s*([A-Z]\w*)\s*(\([^)]*\))?:">
 <!ENTITY refregex "\{ref:#[^}]*\}">
+<!ENTITY anchorregex "\{#[^}]*\}">
 <!ENTITY strongemphasisregex "(\s|^)[\*_]{3}[^\*_]+[\*_]{3}(\s|\.|,|;|:|\-|\?|$)">
 <!ENTITY strongregex "(\s|^)[\*_]{2}[^\s]{1}[^\*_]+[\*_]{2}(\s|\.|,|;|:|\-|\?|$)">
 <!ENTITY emphasisregex "(\s|^)[\*_]{1}[^\s]{1}[^\*_]+[\*_]{1}(\s|\.|,|;|:|\-|\?|$)">
@@ -41,9 +42,8 @@
       <context attribute="DefinitionBlock" lineEndContext="#stay" name="DefinitionBlock" dynamic="true">
          <Detect2Chars char="{" char1="}" context="#pop" />
 	 <IncludeRules context="inc" /> 
-	 <StringDetect String="%3" attribute="DefinitionName" dynamic="true"/>
-	  <StringDetect String="%2" attribute="DefinitionHead" dynamic="true"/>
-	  <StringDetect String="%1" attribute="ReferenceAnchor" dynamic="true"/>>
+	 <StringDetect String="%2" attribute="DefinitionName" dynamic="true"/>
+	  <StringDetect String="%1" attribute="DefinitionHead" dynamic="true"/>
       </context>
       
       <context attribute="InlineMath" lineEndContext="#stay" name="InlineMathJAX">
@@ -86,6 +86,7 @@
           <RegExpr attribute="emphasis" String="&emphasisregex;"/>
           <RegExpr attribute="strongemphasis" String="&strongemphasisregex;"/>
 	  <RegExpr attribute="Reference" String="&refregex;" />
+	  <RegExpr attribute="Reference" String="&anchorregex;" />
     </context>
       
     </contexts>

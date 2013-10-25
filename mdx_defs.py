@@ -46,8 +46,6 @@ class DefinitionBlockProcessor(BlockProcessor):
 
   START_RE = re.compile(r"""
       ^\s*                            # A definition block starts with possible whitespace,
-      (?:{\s*\#(?P<id>[^\s}]*)\s*})*  # followed by an optional #id in curly braces,
-      \s*
       (?P<type>[^\s:]*)               # then comes the block type (e.g. theorem, example, etc.),
       \s*
       (?:\((?P<name>[^)]*)\))*        # optional name in parenthesis,
@@ -78,10 +76,6 @@ class DefinitionBlockProcessor(BlockProcessor):
   def add_info(self, element, match):
     element.set('class','block '+match['type'])
     element.set('type',match['type'])
-    if match['id']:
-      element.set('id',match['id'])
-      label=etree.SubElement(element,'label')
-      label.set('key',match['id'])
     heading = etree.SubElement(element,'span')
     heading.set('class','block_heading')
     heading.set('type',match['type'])

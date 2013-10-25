@@ -32,6 +32,15 @@ class ReferencesPattern(Pattern):
     node.set('key',markdown.util.AtomicString(m.group('id')))
     return node
 
+class AnchorPattern(Pattern):
+    def __init__(self):
+        markdown.inlinepatterns.Pattern.__init__(self,r'{\s*\#(?P<id>[^\s}]*)\s*}')
+
+    def handleMatch(self, m):
+        node = markdown.util.etree.Element('label')
+        node.set('key',markdown.util.AtomicString(m.group('id')))
+        return node
+
 
 
 class BlockNumberingProcessor(Treeprocessor):
@@ -153,6 +162,7 @@ class ReferencesExtension(markdown.Extension):
     self.md = md
     extNumbering = BlockNumberingProcessor(md)
     md.inlinePatterns.add('references', ReferencesPattern(), '_begin')
+    md.inlinePatterns.add('anchors', AnchorPattern(), '_begin')
     md.treeprocessors.add('blocknumbering',extNumbering, '>inline')
 
 def makeExtension(configs={}):
