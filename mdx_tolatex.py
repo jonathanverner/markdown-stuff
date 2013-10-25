@@ -1,4 +1,5 @@
 import logging
+import os
 from markdown.util import etree
 import re
 
@@ -58,14 +59,29 @@ class laTeXRenderer():
       elif child.tag == 'ref':
         key = child.get('key','')
         output+='\\ref{'+key+'}'
+      elif child.tag == 'img':
+          fname = child.get('src')
+          ext = ''
+          for i in range(1,len(fname)+1):
+              ext=fname[-i]+ext
+              if fname[-i] == '.':
+                  break
+          base = fname[:-len(ext)]
+          if os.path.exists(base+'.pdf'):
+              fname = base+'.pdf'
+          output+='\\begin{center}\\includegraphics{'+fname+'}\\end{center}'
       elif child.tag == 'mathjax':
         self.preserve_underscores=True
         output+=self._escape(child.text).strip()+self._render(child).strip()
         self.preserve_underscores=False
       elif child.tag == 'ul':
         output+='\\begin{itemize}\n  '+self._render(child).strip()+'\n\\end{itemize}'
+      elif child.tag == 'ol':
+        output+='\\begin{enumerate}\n  '+self._render(child).strip()+'\n\\end{enumerate}'
       elif child.tag == 'li':
         output+='  \\item '+self._escape(child.text).strip()+self._render(child)
+      elif child.tag == 'blockquote':
+        output+='\\begin{quotation}\n  '+self._render(child).strip()+'\n\\end{quotation}'
       else:
         output+=self._render(child)
       output += self._escape(child.tail)
