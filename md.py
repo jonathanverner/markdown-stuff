@@ -3,7 +3,9 @@ import argparse
 import os
 
 import markdown
+from markdown.util import etree
 from  mdx_tolatex import laTeXRenderer
+from mdx_defs import build_headings_css
 import django.conf
 import django.template
 import logging
@@ -49,13 +51,17 @@ def main():
 
   md = markdown.Markdown(extensions=['extra','defs','mymathjax','outline','semanticwikilinks','headerid','references','meta'])
   html = md.convert( unicode(args.document.read(),encoding='utf-8',errors='ignore') )
+  html_tree = etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+
+  dct = {}
   if args.format == 'html':
     output = html
+    dct['headings_css'] = build_headings_css(html_tree,position='after')
   elif args.format == 'latex':
     latex = laTeXRenderer()
     output = latex.render(html)
 
-  dct = {'content':output}
+  dct['content']=output
   for (k,v) in md.Meta.items():
     dct[k] = ' '.join(v)
 

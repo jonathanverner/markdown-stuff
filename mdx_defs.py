@@ -22,6 +22,26 @@ from markdown.blockprocessors import BlockProcessor
 
 logger =  logging.getLogger(__name__)
 
+def build_headings_css(doc, position='before'):
+
+    def walk(node):
+        ret = set([])
+        for child in node:
+            if 'block' in child.get('class','').split(' '):
+                ret.add(child.get('type',''))
+            ret = ret.union(walk(child))
+        return ret
+
+    block_types = walk(doc)
+    css = ''
+    if position == 'after':
+        space_after=' '
+    else:
+        space_after=''
+    for bt in block_types:
+        css += '.block_heading[type="'+bt+'"]:'+position+" {\n  content:'"+bt+space_after+"'\n}\n"
+    return css
+
 class DefinitionBlockProcessor(BlockProcessor):
 
   START_RE = re.compile(r"""
@@ -63,7 +83,7 @@ class DefinitionBlockProcessor(BlockProcessor):
       label.set('key',match['id'])
     heading = etree.SubElement(element,'span')
     heading.set('class','block_heading')
-    heading.text = match['type']
+    heading.set('type',match['type'])
     number = etree.SubElement(heading,'span')
     number.set('class','block_number')
 
