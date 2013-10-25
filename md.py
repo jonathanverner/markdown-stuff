@@ -47,7 +47,7 @@ def main():
   tpl = django.template.Template(template)
 
 
-  md = markdown.Markdown(extensions=['extra','defs','mathjax','outline','semanticwikilinks','headerid','references','meta'])
+  md = markdown.Markdown(extensions=['extra','defs','mymathjax','outline','semanticwikilinks','headerid','references','meta'])
   html = md.convert( unicode(args.document.read(),encoding='utf-8',errors='ignore') )
   if args.format == 'html':
     output = html

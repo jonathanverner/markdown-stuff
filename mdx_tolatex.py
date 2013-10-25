@@ -72,7 +72,7 @@ class laTeXRenderer():
           output+='\\begin{center}\\includegraphics{'+fname+'}\\end{center}'
       elif child.tag == 'mathjax':
         self.preserve_underscores=True
-        output+=self._escape(child.text).strip()+self._render(child).strip()
+        output+=' '+self._escape(child.text).strip()+self._render(child).strip()+' '
         self.preserve_underscores=False
       elif child.tag == 'ul':
         output+='\\begin{itemize}\n  '+self._render(child).strip()+'\n\\end{itemize}'
