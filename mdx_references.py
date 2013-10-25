@@ -48,7 +48,7 @@ class BlockNumberingProcessor(Treeprocessor):
     depth = self._tag2depth(tag)
     if depth is None:
       return False
-    logger.warn('SECTION: '+str(self.current_section_tuple)+'='+self.section_number())
+    logger.debug('SECTION: '+str(self.current_section_tuple)+'='+self.section_number())
     if depth < len(self.current_section_tuple):
       self.current_section_tuple[depth]+=1
       self.current_section_tuple = self.current_section_tuple[:depth+1]
@@ -98,10 +98,10 @@ class BlockNumberingProcessor(Treeprocessor):
 
   def _recursive_ref(self, root):
     for child in root:
-      logger.warn(child.tag)
+      logger.debug(child.tag)
       if child.tag == 'ref':
-        logger.warn(child.tag+'->'+child.get('key'))
         number = etree.SubElement(child,'span')
+        logger.debug(child.tag+'->'+child.get('key'))
         number.set('class','reference_number')
         try:
           number.text = self.labels[child.get('key','')]

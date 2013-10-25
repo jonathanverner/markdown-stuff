@@ -1,24 +1,6 @@
-#! /usr/bin/env python
-
-
-'''
-Defs/Exs/Theorems Extension for Python-Markdown
-===============================================
-
-Adds support for definitions/theorems.
-
-
-Usage
------
-
-'''
-
 import logging
-import markdown
 from markdown.util import etree
 import re
-from markdown.treeprocessors import Treeprocessor
-from markdown.inlinepatterns import Pattern
 
 logger =  logging.getLogger(__name__)
 
@@ -88,8 +70,3 @@ class laTeXRenderer():
         output+=self._render(child)
       output += self._escape(child.tail)
     return output
-
-
-def toLaTeX(html):
-  tree = etree.fromstring(html.encode('utf-8'))
-  return _toLaTeX(tree)
