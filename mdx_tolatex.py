@@ -9,9 +9,12 @@ class laTeXRenderer(object):
   def __init__(self):
     self.preserve_underscores = False
 
-  def render(self, html ):
+  def render_from_HTML(self, html ):
     tree = etree.fromstring(html.encode('utf-8'))
-    return self._render(tree)
+    return self.render_from_dom(tree)
+
+  def render_from_dom(self, dom_tree ):
+    return self._render(dom_tree)
 
   def _sectionDepth(self,tag):
     if len(tag) != 2 or not tag.startswith('h'):

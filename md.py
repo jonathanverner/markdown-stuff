@@ -59,7 +59,7 @@ def main():
     dct['headings_css'] = build_headings_css(html_tree,position='after')
   elif args.format == 'latex':
     latex = laTeXRenderer()
-    output = latex.render(u'<html><head></head><body>'+html+u'</body></html>')
+    output = latex.render_from_dom(html_tree)
 
   dct['content']=output
   for (k,v) in md.Meta.items():
