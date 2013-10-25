@@ -42,6 +42,7 @@ class BlockNumberingProcessor(Treeprocessor):
     self.inBlock = False
     self.inBlockType = ''
     self.labels = {}
+    self.number_by_type = False
 
   def section(self, tag):
     depth = self._tag2depth(tag)
@@ -62,10 +63,14 @@ class BlockNumberingProcessor(Treeprocessor):
     return '.'.join(map(lambda x:str(x),self.current_section_tuple[:depth]))
 
   def block_number(self,typ):
+    if not self.number_by_type:
+        typ = 'generic'
     logger.debug('BLOCK_NUMBER:'+str(self.current_numbering))
     return self.section_number(depth=self.depth_limit)+'.'+str(self.current_numbering[typ])
 
   def next_number(self, typ):
+    if not self.number_by_type:
+        typ = 'generic'
     try:
       self.current_numbering[typ] += 1
     except:
