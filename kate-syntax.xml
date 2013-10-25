@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Kate syntax highlight filter for TeX-Markdown documents.
+
+    Copyright 2008 Darrin Yeager. http://www.dyeager.org/
+    Dual-Licensed under both GPL and BSD licenses.
+
+    Extended 2009 Claes Holmerson. http://github.com/claes/kate-markdown/
+    
+    Modified 2013 Jonathan Verner. http://jonathan.verner.matfyz.cz
+-->
+<!DOCTYPE language SYSTEM "language.dtd"
+[
+<!--<!ENTITY definitionblockregex "^\s*(\{#[^}]*\})?\s*([A-Z]\w*)\s*(\([^)]*\)?:">-->
+<!ENTITY definitionblockregex "^\s*(\{#[^}]*\})?\s*([A-Z]\w*)\s*(\([^)]*\))?:">
+<!ENTITY refregex "\{ref:#[^}]*\}">
+<!ENTITY strongemphasisregex "(\s|^)[\*_]{3}[^\*_]+[\*_]{3}(\s|\.|,|;|:|\-|\?|$)">
+<!ENTITY strongregex "(\s|^)[\*_]{2}[^\s]{1}[^\*_]+[\*_]{2}(\s|\.|,|;|:|\-|\?|$)">
+<!ENTITY emphasisregex "(\s|^)[\*_]{1}[^\s]{1}[^\*_]+[\*_]{1}(\s|\.|,|;|:|\-|\?|$)">
+<!-- pandoc style -->
+]>
+<language name="TMarkdown" version="1.3" kateversion="3.7" section="Markup" extensions="*.tmd;*.md;" priority="16" author="Jonathan Verner" license="GPL,BSD">
+  <highlighting>
+    <contexts>
+      <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
+	
+        <DetectChar context="blockquote" char="&gt;" column="0"/>
+        <RegExpr attribute="h1" String="^#\s.*[#]?$"/>
+        <RegExpr attribute="h2" String="^##\s.*[#]?$"/>
+        <RegExpr attribute="h3" String="^###\s.*[#]?$"/>
+        <RegExpr attribute="h4" String="^####\s.*[#]?$"/>
+        <RegExpr attribute="h5" String="^#####\s.*[#]?$"/>
+        <RegExpr attribute="h6" String="^######\s.*[#]?$"/>
+	<RegExpr attribute="meta" String="^(Title|Author|Date|Copyright|Revision|CSS|LaTeX\ XSLT|Categories|Tags|BaseName|Excerpt|Email|Subject|Keywords):(.*)+$"/>
+	<RegExpr attribute="code" String="^([\s]{4,}|\t+).*$"/>
+ 	<RegExpr context="DefinitionBlock" String="&definitionblockregex;" dynamic="true" lookAhead="true" /> 
+
+ <IncludeRules context="inc"/>  
+      </context>
+      
+      <context attribute="DefinitionBlock" lineEndContext="#stay" name="DefinitionBlock" dynamic="true">
+         <Detect2Chars char="{" char1="}" context="#pop" />
+	 <IncludeRules context="inc" /> 
+	 <StringDetect String="%3" attribute="DefinitionName" dynamic="true"/>
+	  <StringDetect String="%2" attribute="DefinitionHead" dynamic="true"/>
+	  <StringDetect String="%1" attribute="ReferenceAnchor" dynamic="true"/>>
+      </context>
+      
+      <context attribute="InlineMath" lineEndContext="#stay" name="InlineMathJAX">
+	<Detect2Chars attribute="InlineMath" char="\" char1=")" context="#pop"/>
+	<DetectChar attribute="InlineMath" char="$" context="#pop"  />
+      </context>
+      
+     <context attribute="DisplayMath" lineEndContext="#stay" name="DisplayMathJAX">
+       	<Detect2Chars attribute="DisplayMath" char="\" char1="]" context="#pop"/>
+	<Detect2Chars attribute="DisplayMath" char="$" char1="$" context="#pop"/>
+     </context>
+
+      <context attribute="blockquote" lineEndContext="#pop" name="blockquote">
+        <RegExpr attribute="bq-strong" String="&strongregex;"/>
+        <RegExpr attribute="bq-emphasis" String="&emphasisregex;"/>
+        <IncludeRules context="inc"/>
+      </context>
+      <context attribute="bullet" lineEndContext="#pop" name="bullet">
+        <RegExpr attribute="bl-strong" String="&strongregex;"/>
+        <RegExpr attribute="bl-emphasis" String="&emphasisregex;"/>
+        <IncludeRules context="inc"/>
+      </context>
+      <context attribute="numlist" lineEndContext="#pop" name="numlist">
+        <RegExpr attribute="nl-strong" String="&strongregex;"/>
+        <RegExpr attribute="nl-emphasis" String="&emphasisregex;"/>
+        <IncludeRules context="inc"/>
+      </context>
+
+
+
+
+    <context name="inc" attribute="common" lineEndContext="#stay">
+          <RegExpr context="bullet" String="^\s*[\*\+\-]\s"/>
+          <RegExpr context="numlist" String="^\s*[\d]+\.\s"/>
+      	  <Detect2Chars char="\" char1="[" context="DisplayMathJAX"/>
+	  <Detect2Chars char="$"  char1="$" context="DisplayMathJAX"/>
+	  <Detect2Chars char="\" char1="(" context="InlineMathJAX"/>
+	  <DetectChar char="$" context="InlineMathJAX" />
+          <RegExpr attribute="strong" String="&strongregex;"/>
+          <RegExpr attribute="emphasis" String="&emphasisregex;"/>
+          <RegExpr attribute="strongemphasis" String="&strongemphasisregex;"/>
+	  <RegExpr attribute="Reference" String="&refregex;" />
+    </context>
+      
+    </contexts>
+    <itemDatas>
+      <itemData name="DefinitionBlock" defStyleNum="dsNormal" italic="true"/>
+      <itemData name="InlineMath" defStyleNum="dsOthers" spellChecking="false"/> 
+      <itemData name="DisplayMath" defStyleNum="dsOthers" spellChecking="false"/> 
+      <itemData name="ReferenceAnchor" defStyleNum="dsDataType" spellChecking="false"/>
+      <itemData name="Reference" defStyleNum="dsDataType" spellChecking="false"/>
+      <itemData name="DefinitionHead" defStyleNume="dsNormal" bold="true"/>
+      <itemData name="DefinitionName" defStyleNume="dsNormal" italic="true"/>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="common" defStyleNum="dsNormal"/>
+      <itemData name="strongemphasis" defStyleNum="dsNormal" italic="true" bold="true"/>
+      <itemData name="emphasis" defStyleNum="dsNormal" italic="true"/>
+      <itemData name="strong" defStyleNum="dsNormal" bold="true"/>
+      <itemData name="h1" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="h2" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="h3" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="h4" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="h5" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="h6" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="meta" defStyleNum="dsComment"/>
+            <itemData name="blockquote" defStyleNum="dsDataType"/>
+      <itemData name="bq-emphasis" defStyleNum="dsDataType" italic="true"/>
+      <itemData name="bq-strong" defStyleNum="dsDataType" bold="true"/>
+      <itemData name="bullet" defStyleNum="dsFloat"/>
+      <itemData name="bl-emphasis" defStyleNum="dsFloat" italic="true"/>
+      <itemData name="bl-strong" defStyleNum="dsFloat" bold="true"/>
+      <itemData name="numlist" defStyleNum="dsFloat"/>
+      <itemData name="nl-emphasis" defStyleNum="dsFloat" italic="true"/>
+      <itemData name="nl-strong" defStyleNum="dsFloat" bold="true"/>
+      <itemData name="comment" defStyleNum="dsComment"/>
+      <itemData name="code" defStyleNum="dsBaseN"/>
+    </itemDatas>
+  </highlighting>
+</language>
