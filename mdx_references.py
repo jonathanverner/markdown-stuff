@@ -100,11 +100,12 @@ class BlockNumberingProcessor(Treeprocessor):
     for child in root:
       logger.debug(child.tag)
       if child.tag == 'ref':
-        number = etree.SubElement(child,'span')
         logger.debug(child.tag+'->'+child.get('key'))
+        number = etree.SubElement(child,'a')
         number.set('class','reference_number')
         try:
           number.text = self.labels[child.get('key','')]
+          number.set('href','#'+self.labels[child.get('key','')])
         except:
           number.text = '??'
       else:
@@ -119,11 +120,14 @@ class BlockNumberingProcessor(Treeprocessor):
         title = child.text
         child.text=''
         number = etree.SubElement(child,'span')
-        number.set('class','section_number')
+        number.set('id','sec'+self.section_number())
+        number.set('class','section_number anchor')
         number.text = self.section_number()
         number.tail=title
       elif 'block' in child.get('class','').split(' '):
         self.current_number = self.next_number(child.get('type',''))
+        child.set('id',self.current_number)
+        child.set('class',child.get('class','')+' anchor')
         self.inBlock = True
         self.inBlockType = child.get('type','')
         clearInBlock = True
@@ -133,7 +137,7 @@ class BlockNumberingProcessor(Treeprocessor):
         if self.inBlock:
           number = self.block_number(self.inBlockType)
         else:
-          number = self.section_number()
+          number = 'sec'+self.section_number()
         self.labels[child.get('key','')] = number
       self._recursive_run(child)
       if clearInBlock:
