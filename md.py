@@ -22,6 +22,7 @@ def main():
   parser.add_argument('-t', '--template', help='document template')
   parser.add_argument('-o', '--output', type=argparse.FileType('w'),help='output file')
   parser.add_argument('-f', '--format',help='output format', choices=['html','latex'],default='html')
+  parser.add_argument('-s', '--subs',help='template substitutions',default='')
   parser.add_argument('--verbose', '-v', action='count',help='be verbose',default=0)
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
 
@@ -57,6 +58,23 @@ def main():
   dct = {'content':output}
   for (k,v) in md.Meta.items():
     dct[k] = ' '.join(v)
+
+  try:
+      for l in open('.md-substitutions','r').readlines():
+          if l.strip().startswith('#'):
+              continue
+          try:
+              k,v = l.strip().split('=')
+              dct[k.strip()] = v.strip()
+          except:
+              pass
+  except:
+      pass
+
+  if args.subs:
+      for ts in args.subs.split(','):
+          k,v = ts.split('=')
+          dct[k] = v
 
   output = tpl.render(django.template.Context(dct))
 
