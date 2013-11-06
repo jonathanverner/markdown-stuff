@@ -61,11 +61,16 @@ class DefinitionBlockProcessor(BlockProcessor):
 
   # FIXME: This should not be hardcoded !!!
   BLOCKTYPES = ['Theorem','Proposition','Lemma','Fact','Observation','Definition','Example','Remark','Note','Excercise','Notation']
+  PROOFS = ['Proof']
 
+  def _valid_type(self, tp):
+      #return tp in self.BLOCKTYPES
+      return tp[0].upper()==tp[0] and tp[1:].lower() == tp[1:] and tp not in self.PROOFS
+      return tp in self.BLOCKTYPES
 
   def test(self, parent, block):
     match = self.START_RE.match(block)
-    if match and match.group('type') in self.BLOCKTYPES:
+    if match and self._valid_type(match.group('type')):
       # Disallow nested definition blocks
       if self.parser.state.isstate('definition_block'):
         logger.warn("Nested definition blocks not allowed: %r" % block)
