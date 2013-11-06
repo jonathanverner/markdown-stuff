@@ -41,6 +41,7 @@
       
       <context attribute="DefinitionBlock" lineEndContext="#stay" name="DefinitionBlock" dynamic="true">
          <Detect2Chars char="{" char1="}" context="#pop" />
+	 <RegExpr attribute="defblockemphasis" String="&emphasisregex;"/>
 	 <IncludeRules context="inc" /> 
 	 <StringDetect String="%2" attribute="DefinitionName" dynamic="true"/>
 	  <StringDetect String="%1" attribute="DefinitionHead" dynamic="true"/>
@@ -102,6 +103,7 @@
       <itemData name="common" defStyleNum="dsNormal"/>
       <itemData name="strongemphasis" defStyleNum="dsNormal" italic="true" bold="true"/>
       <itemData name="emphasis" defStyleNum="dsNormal" italic="true"/>
+       <itemData name="defblockemphasis" defStyleNum="dsNormal" italic="true"/>
       <itemData name="strong" defStyleNum="dsNormal" bold="true"/>
       <itemData name="h1" defStyleNum="dsFunction" bold="true"/>
       <itemData name="h2" defStyleNum="dsFunction" bold="true"/>
