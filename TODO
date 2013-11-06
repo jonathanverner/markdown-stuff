@@ -1,0 +1,9 @@
+  -- bibliography
+     - basic bib-file support
+     - http://www.ams.org/mrlookup support for unknown refs
+     - google scholar support for unknown refs
+  -- proofs (end with a square)
+  -- query for tag attributes
+  -- filter includes referenced elements
+  -- html toc generation
+
