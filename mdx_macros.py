@@ -2,8 +2,8 @@
 
 
 '''
-Macros Extension for Python-Markdown
-===============================================
+Macros Extension for TMD
+========================
 
 Adds support for macros.
 
@@ -14,64 +14,84 @@ Usage
 '''
 
 import logging
-import markdown
-try: from markdown import etree
-except ImportError: from markdown.util import etree
 import re
-from markdown.treeprocessors import Treeprocessor
-from markdown.inlinepatterns import Pattern
+
 
 logger =  logging.getLogger(__name__)
 
-class MacroDefPattern(Pattern):
-    def __init__(self):
-        markdown.inlinepatterns.Pattern.__init__(self, r'\s*@(?P<name>\w*)\s*(\((?P<args>[^)]*)\))?\s*:=\s*(?P<body>[^\n]*)')
-        self.macros={}
 
-    def handleMatch(self, m):
-        md = m.groupdict()
-        node = markdown.util.etree.Element('macro')
-        node.set('name',md['name'])
-        if md['args']:
-            node.set('args',md['args'])
-        node.set('body',md['body'])
-        md = m.groupdict()
-        self.macros[md['name']]=md
-        return node
+ABBREVS_RE = re.compile(r"""\s*={3,}\s*Abbreviations\s*={3,}\s*\n(?P<abbrevs>.*)\n\s*={3,}\s*Abbreviations\s*={3,}\s*""",re.DOTALL | re.UNICODE | re.MULTILINE | re.IGNORECASE)
+ABBREV_RE  = re.compile(r"""\s*\\(?P<name>\w+)(?P<args>\([^)]*\))?\s*=\s*{(?P<body>.*?)};\n\s*""",re.DOTALL | re.UNICODE | re.MULTILINE | re.IGNORECASE)
 
-class MacroPattern(Pattern):
-    def __init__(self,definitions):
-        self.defs = definitions
-        markdown.inlinepatterns.Pattern.__init__(self,r'(?P<all>@(?P<name>\w*)(\((?P<args>[^)]*)\))?)')
+class macro(object):
 
-    def handleMatch(self,m):
-        md = m.groupdict()
-        if not md['name'] in self.defs.macros:
-            return md['all']
-        macro = self.defs.macros[md['name']]
-        ret = macro['body']
-        if macro['args']:
-            if not md['args']:
-                return md['all']
-            else:
-                arg_vals = md['args'].split(',')
-                arg_names = macro['args'].split(',')
-                if len(arg_vals) != len(arg_names):
-                    return md['all']
-                for i in range(len(arg_vals)):
-                    ret = ret.replace(arg_names[i],arg_vals[i])
+    def _arg_pattern(self,name,optional=True):
+        ret = r"(?P<"+name+"full>(?P<"+name+"br>{[^}]*})|(?P<"+name+"comma>[^,)]*))"
+        if optional:
+            ret = ret + '?'
         return ret
 
-class MacrosExtension(markdown.Extension):
-  def __init__(self,configs):
-    pass
+    def __init__(self, name, args, body):
+        self.name = name.strip()
+        self.body = body
+        self.args = {}
+        self.invalid = False
+        if len(self.name) == 0:
+            self.invalid = True
+            return
+        pattern = r'\\'+self.name
+        if args:
+            optional = False
+            required_args = []
+            optional_args = []
+            for arg in args.strip('()').split(','):
+                arg = arg.strip()
+                if optional and not '=' in arg:
+                    self.invalid = True
+                    logger.warn("arg " + arg + " is optional and must have a default value")
+                if optional or '=' in arg:
+                    optional = True
+                    name, default_value = arg.split('=')
+                    name = name.strip()
+                    optional_args.append(self._arg_pattern(name,optional=True))
+                else:
+                    name, default_value = arg, None
+                    required_args.append(self._arg_pattern(name,optional=False))
+                self.args[name]=default_value
+            pattern = pattern + r'\('+','.join(required_args)
+            if len(optional_args) > 0:
+                pattern = pattern + ',?'+',?'.join(optional_args)+r'\)'
+        pattern = pattern+'(?![A-Za-z])'
+        self.macro_pattern = re.compile(pattern)
 
-  def extendMarkdown(self,md,md_globals):
-    self.md = md
-    self.mdefPAT = MacroDefPattern()
-    self.macroPAT = MacroPattern(self.mdefPAT)
-    md.inlinePatterns.add('macrodef', self.mdefPAT, '_begin')
-    md.inlinePatterns.add('macro', self.macroPAT, '>macrodef')
+    def _repl(self, match):
+        d = match.groupdict()
+        ret = self.body
+        for name, default in self.args.items():
+            val = d[name+'br'] or d[name+'comma'] or default
+            if not val:
+                logger.warn("value not supplied for argument "+name)
+                val = ''
+            ret = ret.replace(name, val)
+        return ret
 
-def makeExtension(configs={}):
-  return MacrosExtension(configs=configs)
+    def apply(self, document):
+        if self.invalid:
+            return document
+        return self.macro_pattern.sub(self._repl,document)
+
+def pre_process(document):
+    m = ABBREVS_RE.search(document)
+    if not m:
+        return document
+    document = ABBREVS_RE.sub('\n\n',document)
+    abbrevs = m.groupdict()['abbrevs']
+    macros = {}
+    for abbrev in ABBREV_RE.finditer(abbrevs):
+        d = abbrev.groupdict()
+        macros[d['name']] = macro(d['name'],d['args'],d['body'])
+
+    for m in macros.values():
+        document = m.apply(document)
+
+    return document

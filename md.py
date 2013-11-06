@@ -12,6 +12,7 @@ from mdx_defs import build_headings_css
 import django.conf
 import django.template
 import logging
+import mdx_macros
 
 logging.basicConfig()
 django.conf.settings.configure()
@@ -65,8 +66,10 @@ def main():
   tpl = django.template.Template(template)
 
 
-  md = markdown.Markdown(extensions=['extra','defs','mymathjax','outline','semanticwikilinks','headerid','references','meta','macros'])
-  html = md.convert( unicode(args.document.read(),encoding='utf-8',errors='ignore') )
+  md = markdown.Markdown(extensions=['extra','defs','mymathjax','outline','semanticwikilinks','headerid','references','meta'])
+  doc = unicode(args.document.read(),encoding='utf-8',errors='ignore')
+  doc = mdx_macros.pre_process(doc)
+  html = md.convert( doc )
 
   if args.query:
       try:
