@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import argparse
 import os
+import re
 
 import markdown
 from markdown.util import etree
@@ -123,6 +124,10 @@ def main():
       for ts in args.subs.split(','):
           k,v = ts.split('=')
           dct[k] = v
+
+  if 'image_path' in dct:
+      exp = re.compile(r'(<img\s*[^>]*)\s*src=[\'"]([^\'"]*)[\'"]([^>]*>)')
+      dct['content']=exp.sub(r'\1src="'+dct['image_path']+r'\2"\3',dct['content'])
 
   output = tpl.render(django.template.Context(dct))
 
