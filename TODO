@@ -1,9 +1,37 @@
+QUERYING
+  -- query for tag attributes
+  -- query for definition types
+  -- filter includes referenced elements
+
+ELEMENTS/EXTENSIONS
+
   -- bibliography
      - basic bib-file support
      - http://www.ams.org/mrlookup support for unknown refs
      - google scholar support for unknown refs
-  -- proofs (end with a square)
-  -- query for tag attributes
-  -- filter includes referenced elements
+
+  -- proofs
+     - end with a square
+
   -- html toc generation
+
+  -- images
+     - rethink conversions
+     - include svgs in html
+     - references & numbering
+
+  -- localization
+
+  -- code hilighting
+
+CONFIGURATION
+
+  -- rethink configuration
+  -- options to write css to a separate file
+
+DOCUMENTATION
+
+  -- reklamni spot
+
+
 
