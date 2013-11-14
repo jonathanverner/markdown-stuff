@@ -9,13 +9,46 @@ import lxml
 from lxml.cssselect import CSSSelector
 from  mdx_tolatex import laTeXRenderer
 from mdx_defs import build_headings_css
-import django.conf
-import django.template
 import logging
 import mdx_macros
 
-logging.basicConfig()
-django.conf.settings.configure()
+template_system = None
+try:
+    import django.conf
+    import django.template
+
+    logging.basicConfig()
+    django.conf.settings.configure()
+    template_system = "DJANGO"
+except:
+    pass
+
+try:
+    from jinja2 import Template
+    Environment(extensions=['jinja2.ext.autoescape'])
+    template_system = "JINJA2"
+except:
+    pass
+
+
+
+
+def render_template(tpl, context):
+    if template_system == "DJANGO":
+        dtpl = django.template.Template(tpl)
+        return dtpl.render(django.template.Context(context))
+
+    elif template_system == "JINJA2":
+        dtpl = Template(tpl)
+        return dtpl.render(context)
+    else:
+        logging.getLogger("md").warn("No template library found!")
+        for (key,value) in context.items():
+            exp = re.compile(r"{{\s*"+key+"\s*}}",re.UNICODE | re.IGNORECASE)
+            tpl=exp.sub(value.replace("\\", "\\\\"),tpl)
+        exp = re.compile("{%[^%]*%}")
+        tpl = exp.sub("",tpl)
+        return tpl
 
 def text_content(element):
     ret = ''
@@ -63,7 +96,6 @@ def main():
       logger.critical('Could not open template file'+str(e))
       exit(-1)
 
-  tpl = django.template.Template(template)
 
 
   md = markdown.Markdown(extensions=['extra','defs','mymathjax','outline','semanticwikilinks','headerid','references','meta'])
@@ -132,7 +164,7 @@ def main():
       exp = re.compile(r'(<img\s*[^>]*)\s*src=[\'"]([^\'"]*)[\'"]([^>]*>)')
       dct['content']=exp.sub(r'\1src="'+dct['image_path']+r'\2"\3',dct['content'])
 
-  output = tpl.render(django.template.Context(dct))
+  output = render_template(template, dct)
 
   if args.output:
     args.output.write(output.encode('utf-8'))
