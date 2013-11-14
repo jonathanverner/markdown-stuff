@@ -96,9 +96,7 @@ def main():
       logger.critical('Could not open template file'+str(e))
       exit(-1)
 
-
-
-  md = markdown.Markdown(extensions=['extra','defs','mymathjax','outline','semanticwikilinks','headerid','references','meta'])
+  md = markdown.Markdown(extensions=['extra','defs','mymathjax','wikilinks','headerid','references','meta'])
   doc = unicode(args.document.read(),encoding='utf-8',errors='ignore')
   doc = mdx_macros.pre_process(doc)
   html = md.convert( doc )
