@@ -12,6 +12,7 @@ ELEMENTS/EXTENSIONS
 
   -- proofs
      - end with a square
+     - implement proof references (e.g. "Proof (of #equivalence):")
 
   -- html toc generation
 
@@ -28,10 +29,16 @@ CONFIGURATION
 
   -- rethink configuration
   -- options to write css to a separate file
+  -- block appearance
+     - numbering before/after
 
 DOCUMENTATION
 
   -- reklamni spot
+
+LATEX
+
+  -- generate block definition environments definitions
 
 
 
