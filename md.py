@@ -8,7 +8,7 @@ from markdown.util import etree
 import lxml
 from lxml.cssselect import CSSSelector
 from  mdx_tolatex import laTeXRenderer
-from mdx_defs import build_headings_css
+from mdx_defs import build_headings
 import logging
 import mdx_macros
 
@@ -132,8 +132,9 @@ def main():
 
   if args.format == 'html':
     output = html
-    dct['headings_css'] = build_headings_css(html_tree,position='after')
+    dct['headings_css'] = build_headings(html_tree,position='after',format='css')
   elif args.format == 'latex':
+    dct['headings'] = build_headings(html_tree,position='after',format='latex')
     latex = laTeXRenderer()
     output = latex.render_from_dom(html_tree)
 

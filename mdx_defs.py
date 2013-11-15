@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-
+# -*- coding:utf-8 -*-
 
 '''
 Defs/Exs/Theorems Extension for Python-Markdown
@@ -22,8 +22,42 @@ from markdown.blockprocessors import BlockProcessor
 
 logger =  logging.getLogger(__name__)
 
-def build_headings_css(doc, position='before'):
+def _css_from_blocktypes(types, position):
+    css = u"""
+.qed:after {
+  content:'□';
+  font-size:1.5em;
+}
 
+.qed {
+  float:right;
+  text-align:right;
+  margin-top:-0.3em;
+}
+"""
+    if position == 'after':
+        space_after=' '
+    else:
+        space_after=''
+    for bt in types:
+        css += '.block_heading[type="'+bt+'"]:'+position+" {\n  content:'"+bt+space_after+"'\n}\n"
+    return css
+
+def _latex_from_blocktypes(types,position):
+    if position == 'after':
+        ret = u'\\swapnumbers\n'
+    else:
+        ret = u''
+    for bt in types:
+        if bt in DefinitionBlockProcessor.PROOFS:
+            next
+        ret += u'\\newtheorem{'+bt.lower()+u'}[subsection]{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+        ret += u'\\newtheorem{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+    return ret
+
+
+def build_headings(doc, position='before', format='css'):
+    """ @position = 'before' (Theorem 3.1) / 'after' ( 3.1 Theorem ) """
     def walk(node):
         ret = set([])
         for child in node:
@@ -33,29 +67,28 @@ def build_headings_css(doc, position='before'):
         return ret
 
     block_types = walk(doc)
-    css = ''
-    if position == 'after':
-        space_after=' '
-    else:
-        space_after=''
-    for bt in block_types:
-        css += '.block_heading[type="'+bt+'"]:'+position+" {\n  content:'"+bt+space_after+"'\n}\n"
-    return css
+    if format == 'css':
+        return _css_from_blocktypes(block_types,position)
+    elif format == 'latex':
+        return _latex_from_blocktypes(block_types,position)
 
 class DefinitionBlockProcessor(BlockProcessor):
 
   START_RE = re.compile(r"""
       ^\s*                            # A definition block starts with possible whitespace,
-      (?P<type>[^\s:]*)               # then comes the block type (e.g. theorem, example, etc.),
+      (?P<type>[^\s:*]*)              # then comes the block type (e.g. theorem, example, etc.),
+      (?P<do_not_number>\*)*          # an optional asterix indicating the block should not be numbered
       \s*
       (?:\((?P<name>[^)]*)\))*        # optional name in parenthesis,
       \s*
       (?:\[(?P<references>[^\]]*)\])* # optional references come in square brackegs (e.g. [ Balcar, Dow ]),
       \s*
-      :                               # and finally a colon
+      :                               # and finally a colon (with a possible asterix indicating no numbering)
       \s*                             # some whitespace (which will be discarded)
       (?P<rest>.*)                    # and the rest of the block
   """, re.VERBOSE | re.DOTALL)
+
+  PROOF_REFERENCE_RE = re.compile(r"""\s*of\s* #(?P<id>[^\s]*)""")
 
   END_RE = re.compile(r'(.*){}\s*$', re.DOTALL)
 
@@ -63,14 +96,19 @@ class DefinitionBlockProcessor(BlockProcessor):
   BLOCKTYPES = ['Theorem','Proposition','Lemma','Fact','Observation','Definition','Example','Remark','Note','Excercise','Notation']
   PROOFS = ['Proof']
 
-  def _valid_type(self, tp):
+  def _valid_type(self, tp, match):
       #return tp in self.BLOCKTYPES
-      return tp[0].upper()==tp[0] and tp[1:].lower() == tp[1:] and tp not in self.PROOFS
-      return tp in self.BLOCKTYPES
+      if not (tp[0].upper()==tp[0] and tp[1:].lower() == tp[1:]):
+          return False
+      if tp not in self.PROOFS:
+          return True
+      if match['references'] or match['name'] and not self.PROOF_REFERENCE_RE.match(match['name']):
+          return False
+      return True
 
   def test(self, parent, block):
     match = self.START_RE.match(block)
-    if match and self._valid_type(match.group('type')):
+    if match and self._valid_type(match.group('type'),match.groupdict()):
       # Disallow nested definition blocks
       if self.parser.state.isstate('definition_block'):
         logger.warn("Nested definition blocks not allowed: %r" % block)
