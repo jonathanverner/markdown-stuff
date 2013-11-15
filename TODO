@@ -11,7 +11,7 @@ ELEMENTS/EXTENSIONS
      - google scholar support for unknown refs
 
   -- proofs
-     - end with a square
+     - end with a square DONE
      - implement proof references (e.g. "Proof (of #equivalence):")
 
   -- html toc generation IN PROGRESS

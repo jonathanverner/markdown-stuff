@@ -126,6 +126,7 @@ class BlockNumberingProcessor(Treeprocessor):
   def _recursive_run(self,root):
     clearInBlock = False
     for child in root:
+      child_classes = child.get('class','').split(' ')
       if self.section(child.tag):
         title = child.text
         child.text=''
@@ -134,14 +135,14 @@ class BlockNumberingProcessor(Treeprocessor):
         number.set('class','section_number anchor')
         number.text = self.section_number()
         number.tail=title
-      elif 'block' in child.get('class','').split(' '):
+      elif 'block' in child_classes and not 'do_not_number' in child_classes:
         self.current_number = self.next_number(child.get('type',''))
         child.set('id',self.current_number)
         child.set('class',child.get('class','')+' anchor')
         self.inBlock = True
         self.inBlockType = child.get('type','')
         clearInBlock = True
-      elif 'block_number' in child.get('class','').split(' '):
+      elif 'block_number' in child_classes:
         child.text = self.current_number
       elif 'label' == child.tag:
         if self.inBlock:

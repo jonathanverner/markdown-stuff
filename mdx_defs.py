@@ -117,30 +117,53 @@ class DefinitionBlockProcessor(BlockProcessor):
     return False
 
   def add_info(self, element, match):
-    element.set('class','block '+match['type'])
+    el_classes = ['block',match['type']]
+
+    # Add the 'do_not_number' css class to proofs
+    # and unnumbered blocks (i.e. Theorem*, Definition*, etc)
+    if match['do_not_number'] or match['type'] in self.PROOFS:
+        el_classes.append('do_not_number')
+    element.set('class',' '.join(el_classes))
     element.set('type',match['type'])
+
+    # Add a heading element
     heading = etree.SubElement(element,'span')
     heading.set('class','block_heading')
     heading.set('type',match['type'])
-    number = etree.SubElement(heading,'span')
-    number.set('class','block_number')
 
-    if match['name']:
-      element.set('name',match['name'])
-      name_heading = etree.SubElement(element,'span')
-      name_heading.set('class','block_name')
-      name_heading.text = match['name']
+    # Only non-proofs have authors, numbers and possible references
+    if not match['type'] in self.PROOFS:
+        # Add a number to the heading
+        if not match['do_not_number']:
+            number = etree.SubElement(heading,'span')
+            number.set('class','block_number')
 
-    if match['references']:
-      element.set('references',match['references'])
-      ref_heading = etree.SubElement(element,'span')
-      ref_heading.set('class','block_references')
-      ref_heading.text = match['references']
+        # Add a name to the heading
+        if match['name']:
+            element.set('name',match['name'])
+            name_heading = etree.SubElement(element,'span')
+            name_heading.set('class','block_name')
+            name_heading.text = match['name']
+
+        # Add author references to the heading
+        if match['references']:
+            element.set('references',match['references'])
+            ref_heading = etree.SubElement(element,'span')
+            ref_heading.set('class','block_references')
+            ref_heading.text = match['references']
+
+    elif match['name']:
+        key = self.PROOF_REFERENCE_RE.match(match['name']).groupdict()['id'];
+        referenced_block = etree.SubElement(element,'span')
+        referenced_block.text = 'of '
+        ref = etree.SubElement(referenced_block,'ref')
+        ref.set('key',key)
 
   def run(self, parent, blocks):
     block = blocks.pop(0)
     m = self.START_RE.match(block).groupdict()
     def_element = etree.SubElement(parent, 'div')
+    typ = m['type']
     self.add_info(def_element,m)
     self.parser.state.set('definition_block')
     block_text = m['rest']
@@ -163,6 +186,9 @@ class DefinitionBlockProcessor(BlockProcessor):
       logger.warn("Unterminated definition block: %r" % block)
     self.parser.parseBlocks(def_element,[block_text])
     self.parser.state.reset()
+    if typ in self.PROOFS:
+        qed = etree.SubElement(def_element,'span')
+        qed.set('class','qed')
 
 
 class DefinitionBlockExtension(markdown.Extension):
