@@ -84,20 +84,28 @@ MML_HTMLorMML"></script>
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="navbar-header">
     <a class="navbar-brand" href="#">
-      <h3>{{ title }}</h3>
-    
+      <h4>{{ title }}</h4>
+
       {% if author %}
-      <h4><i> {{ author }}</i></h4>
+      <h5><i> {{ author }}</i></h5>
       {% endif %}
     </a>
   </div>
+  <ul class="nav navbar-nav navbar-right">
+      {% if toc %}
+      <li><a href="#toc"><span class="glyphicon glyphicon-align-justify"></span></a></li>
+      {% endif %}
+  </ul>
 </nav>
 
 
 {% endif %}
 
-<div id='toc'>
+{% if toc %}
+<div id='toc' href='#'>
+{{ toc }}
 </div> <!-- toc -->
+{% endif %}
 
 <div id='article'>
 
