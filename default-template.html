@@ -25,22 +25,26 @@ src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></scrip
 <script>
 function enablePopOvers() {
   $('.reference_number').each( function(index, E) {
-    var target = document.getElementById($(E).attr('href').slice(1));
-    jqT = $(target)
-    var target_type = jqT.attr('type');
-    var target_number = jqT.attr('id');
-    var target_content = ""
-    $(target.children).not('.block_heading').each(function() {
-      target_content += $(this).html();
-    });
-    var title = "<span class='block_heading' type='"+target_type+"'>"+
-            "<span class='block_number'>"+target_number+"</span>"+
-	    "</span>";
-    jqE = $(E)
-    jqE.attr('data-content',target_content);
-    jqE.attr('data-html',true);
-    jqE.attr('data-trigger','hover');
-    jqE.attr('data-title',title)
+    try {
+        var target = document.getElementById($(E).attr('href').slice(1));
+        jqT = $(target)
+        var target_type = jqT.attr('type');
+        var target_number = jqT.attr('id');
+        var target_content = ""
+        $(target.children).not('.block_heading').each(function() {
+            target_content += $(this).html();
+        });
+        var title = "<span class='block_heading' type='"+target_type+"'>"+
+                    "<span class='block_number'>"+target_number+"</span>"+
+                    "</span>";
+        jqE = $(E)
+        jqE.attr('data-content',target_content);
+        jqE.attr('data-html',true);
+        jqE.attr('data-trigger','hover');
+        jqE.attr('data-title',title)
+    } catch (err) {
+      return
+    }
   });
   $('.reference_number').popover();
 }
