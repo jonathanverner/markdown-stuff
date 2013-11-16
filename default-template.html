@@ -49,12 +49,6 @@ function enablePopOvers() {
   $('.reference_number').popover();
 }
 
-jQuery(document).ready( function () {
-  MathJax.Hub.Queue(function() {
-    enablePopOvers();
-  });
-});
-
 function hideTOC() {$('#toc').removeClass('showtoc');$('#toc').addClass('hidetoc');}
 function showTOC() {$('#toc').removeClass('hidetoc');$('#toc').addClass('showtoc');}
 
@@ -86,6 +80,11 @@ MathJax.Hub.Config({
 <script type="text/javascript"
 src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-
 MML_HTMLorMML"></script>
+<script>
+  MathJax.Hub.Queue(function() {
+    enablePopOvers();
+  });
+</script>
 
 <style>
 {% autoescape off %}
