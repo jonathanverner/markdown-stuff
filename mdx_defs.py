@@ -49,10 +49,9 @@ def _latex_from_blocktypes(types,position):
     else:
         ret = u''
     for bt in types:
-        if bt in DefinitionBlockProcessor.PROOFS:
-            next
-        ret += u'\\newtheorem{'+bt.lower()+u'}[subsection]{'+bt[0].upper()+bt[1:].lower()+u'}\n';
-        ret += u'\\newtheorem{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+        if bt not in DefinitionBlockProcessor.PROOFS:
+            ret += u'\\newtheorem{'+bt.lower()+u'}[subsection]{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+            ret += u'\\newtheorem{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
     return ret
 
 
