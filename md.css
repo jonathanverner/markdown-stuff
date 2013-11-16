@@ -107,13 +107,8 @@ h1 {
 }
 
 h1 .section_number {
-  display:none;
-}
-
-
-.navbar-right {
-    font-size:1.5em;
-    padding-right:1em;
+  visibility:hidden;
+  width:0px;
 }
 
 .navbar-brand h4 {
