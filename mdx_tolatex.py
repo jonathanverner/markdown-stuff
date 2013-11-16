@@ -31,7 +31,6 @@ class laTeXRenderer(object):
       ret = s
     else:
       ret=s.replace('_','\\'+'_')
-    ret=ret.replace('&','\\&')
     return ret
 
   def _render(self, node):
@@ -41,7 +40,7 @@ class laTeXRenderer(object):
       if sec_depth is not None:
         output+='\\'+"sub"*sec_depth+'section{'+self._escape(child.text)+self._render(child).strip()+'}\n'
       elif child.tag == 'label':
-        output+='\\label{'+child.get('key','')+'}\n'
+        output+='\\label{'+child.get('key','')+'} '
       elif child.tag == 'p':
         output+='\n\n'+self._escape(child.text)+self._render(child)+'\n\n'
       elif child.tag == 'div':
@@ -75,7 +74,7 @@ class laTeXRenderer(object):
           output+='\\begin{center}\\includegraphics{'+fname+'}\\end{center}'
       elif child.tag == 'mathjax':
         self.preserve_underscores=True
-        output+=' '+self._escape(child.text).strip()+self._render(child).strip()+' '
+        output+=self._escape(child.text).strip()+self._render(child).strip()
         self.preserve_underscores=False
       elif child.tag == 'ul':
         output+='\\begin{itemize}\n  '+self._render(child).strip()+'\n\\end{itemize}'
