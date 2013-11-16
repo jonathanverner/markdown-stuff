@@ -14,7 +14,7 @@ ELEMENTS/EXTENSIONS
      - end with a square DONE
      - implement proof references (e.g. "Proof (of #equivalence):")
 
-  -- html toc generation IN PROGRESS
+  -- html toc generation DONE
 
   -- images
      - rethink conversions

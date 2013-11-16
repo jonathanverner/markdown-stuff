@@ -41,7 +41,55 @@ class AnchorPattern(Pattern):
         node.set('key',markdown.util.AtomicString(m.group('id')))
         return node
 
+class TOCNode(object):
+    def __init__(self, title=None,root=False):
+        self.title=title
+        self.children = {}
+        self.root = root
 
+    def _get_child(self,id,create=True):
+        if id in self.children:
+            return self.children[id]
+        if create:
+            self.children[id] = TOCNode()
+            return self.children[id]
+        return None
+
+    def _get_descendant(self, path, create=True):
+        if len(path) == 0:
+            return self
+        child = self._get_child(path[0],create)
+        if child:
+            return child._get_descendant(path[1:],create)
+        else:
+            return child
+
+    def to_element(self,prefix=''):
+        if self.root:
+            element = etree.Element('toc')
+        else:
+            element = etree.Element('li')
+            if self.title:
+                link = etree.SubElement(element,'a')
+                link.set('href','#sec'+prefix)
+                number = etree.SubElement(link,'span')
+                number.set('class','section_number')
+                number.text = prefix
+                title = etree.SubElement(link,'span')
+                title.text = self.title
+            element.set('path',prefix)
+        if len(prefix) > 0:
+            prefix = prefix + '.'
+        if len(self.children) > 0:
+            children = etree.SubElement(element,'ul')
+            for (id, node) in sorted(self.children.items()):
+                children.append( node.to_element(prefix+id) )
+        return element
+
+    def insert_section(self, section_number, title):
+        path = section_number.split('.')
+        node = self._get_descendant(path, create=True)
+        node.title = title
 
 class BlockNumberingProcessor(Treeprocessor):
   def __init__(self,md_instance):
@@ -52,6 +100,7 @@ class BlockNumberingProcessor(Treeprocessor):
     self.inBlockType = ''
     self.labels = {}
     self.number_by_type = False
+    self.md = md_instance
 
   def section(self, tag):
     depth = self._tag2depth(tag)
@@ -135,6 +184,7 @@ class BlockNumberingProcessor(Treeprocessor):
         number.set('class','section_number anchor')
         number.text = self.section_number()
         number.tail=title
+        self.md.TOC.insert_section(self.section_number(),title)
       elif 'block' in child_classes and not 'do_not_number' in child_classes:
         self.current_number = self.next_number(child.get('type',''))
         child.set('id',self.current_number)
@@ -161,6 +211,7 @@ class ReferencesExtension(markdown.Extension):
 
   def extendMarkdown(self,md,md_globals):
     self.md = md
+    self.md.TOC = TOCNode(root=True)
     extNumbering = BlockNumberingProcessor(md)
     md.inlinePatterns.add('references', ReferencesPattern(), '_begin')
     md.inlinePatterns.add('anchors', AnchorPattern(), '_begin')

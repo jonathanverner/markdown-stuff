@@ -142,6 +142,8 @@ def main():
   for (k,v) in md.Meta.items():
     dct[k] = ' '.join(v)
 
+  dct['toc']=etree.tostring(md.TOC.to_element())
+
   try:
       for l in open('.md-substitutions','r').readlines():
           if l.strip().startswith('#'):

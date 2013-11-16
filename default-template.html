@@ -113,7 +113,10 @@ MML_HTMLorMML"></script>
 
 {% if toc %}
 <div id='toc' class='hidetoc'>
+<h4> Table of Contents </h4>
+{% autoescape off %}
 {{ toc }}
+{% endautoescape %}
 </div> <!-- toc -->
 {% endif %}
 
