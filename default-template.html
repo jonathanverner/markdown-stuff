@@ -51,15 +51,13 @@ jQuery(document).ready( function () {
   });
 });
 
+function hideTOC() {$('#toc').removeClass('showtoc');$('#toc').addClass('hidetoc');}
+function showTOC() {$('#toc').removeClass('hidetoc');$('#toc').addClass('showtoc');}
+
 function toggleToc() {
   var toc = this.document.getElementById('toc');
-  if (toc.classList.contains('showtoc')) {
-    toc.classList.remove('showtoc');
-    toc.classList.add('hidetoc');
-  } else {
-    toc.classList.remove('hidetoc');
-    toc.classList.add('showtoc');
-  }
+  if (toc.classList.contains('showtoc')) hideTOC();
+  else showTOC();
 }
 
 $(window).scroll(function () {
