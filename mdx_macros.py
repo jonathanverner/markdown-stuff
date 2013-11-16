@@ -61,6 +61,8 @@ class macro(object):
             pattern = pattern + r'\('+','.join(required_args)
             if len(optional_args) > 0:
                 pattern = pattern + ',?'+',?'.join(optional_args)+r'\)'
+            else:
+                pattern = pattern + r'\)'
         pattern = pattern+'(?![A-Za-z])'
         self.macro_pattern = re.compile(pattern)
 
