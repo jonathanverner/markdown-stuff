@@ -126,6 +126,20 @@ h1 .section_number {
     padding-bottom:0px;
 }
 
+.smallnav .author {
+    display:none;
+}
+.navbar-right {
+    margin-right:2em;
+    padding-top:1em;
+    padding-bottom:1em;
+}
+
+.smallnav .navbar-right {
+    padding-top:0px;
+    padding-bottom:0px;
+}
+
 #toc {
     position: fixed;
     right: 0;
@@ -140,6 +154,10 @@ h1 .section_number {
     -webkit-transform-origin: 100% 50%;
     -webkit-transition: -webkit-transform 0.2s ease-in-out;
     outline: 0;
+}
+
+#toc.smallnav {
+   top:50px;
 }
 
 .hidetoc {

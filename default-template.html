@@ -57,6 +57,18 @@ function toggleToc() {
     toc.classList.add('showtoc');
   }
 }
+
+$(window).scroll(function () {
+    if ($(window).scrollTop() > 200) {
+        $("nav").addClass('smallnav');
+        $("#toc").addClass('smallnav');
+    }
+    else {
+        $("nav").removeClass('smallnav');
+        $("#toc").removeClass('smallnav');
+    }
+});
+
 </script>
 
 <!-- MATHJAX -->
@@ -94,10 +106,10 @@ MML_HTMLorMML"></script>
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="navbar-header">
     <a class="navbar-brand" href="#">
-      <h4>{{ title }}</h4>
+      <span class='title'>{{ title }}</span>
 
       {% if author %}
-      <h5><i> {{ author }}</i></h5>
+      <h5 class='author'><i> {{ author }}</i></h5>
       {% endif %}
     </a>
   </div>
