@@ -129,9 +129,11 @@ h1 .section_number {
 #toc {
     position: fixed;
     right: 0;
-    width: 180px;
-    top: 0;
-    bottom: 0;
+    width: 220px;
+    padding-top:20px;
+    padding-bottom:50px;
+    top: 70px;
+    bottom:0;
     box-shadow: 0px 0px 15px black;
     background: white;
     padding: 10px;
@@ -146,4 +148,18 @@ h1 .section_number {
 
 .showtoc {
     -webkit-transform: scaleX(1);
+}
+
+.toc h4 {
+    text-align:center;
+}
+.toc ul {
+    padding:0px;
+}
+.toc li {
+    list-style:none;
+}
+
+.toc .section_number {
+    visibility:hidden;
 }
