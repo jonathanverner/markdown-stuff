@@ -3,7 +3,10 @@
 <head>
  <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8" />
 
-<!-- BOOTSTRAP CSS -->
+<!-- BOOTSTRAP RESPONSIVE LAYOUT -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <!-- BOOTSTRAP CSS -->
 <link
 href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
 rel="stylesheet" />
@@ -106,6 +109,12 @@ MML_HTMLorMML"></script>
 
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+       </button>
     <a class="navbar-brand" href="#">
       <span class='title'>{{ title }}</span>
 
@@ -114,6 +123,7 @@ MML_HTMLorMML"></script>
       {% endif %}
     </a>
   </div>
+  <div class="collapse navbar-collapse" id="navbar-collapse-1">
   <ul class="nav navbar-nav navbar-right">
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Download<b class="caret"></b></a>
@@ -127,9 +137,13 @@ MML_HTMLorMML"></script>
         </ul>
       </li>
       {% if toc %}
-      <li><a onclick='toggleToc();'><span class="glyphicon glyphicon-align-justify"></span></a></li>
+      <li><a onclick='toggleToc();'>
+        <span class="glyphicon glyphicon-align-justify visible-md visible-sm visible-lg"></span>
+        <span class="visible-xs">Contents</span>
+      </a></li>
       {% endif %}
   </ul>
+  </div>
 </nav>
 
 
@@ -137,6 +151,7 @@ MML_HTMLorMML"></script>
 
 {% if toc %}
 <div id='toc' class='hidetoc toc'>
+<div style='padding-top:5em' class='visible-xs'>&nbsp;</div>
 <h4> Table of Contents </h4>
 {% autoescape off %}
 {{ toc }}
