@@ -154,6 +154,7 @@ h1 .section_number {
     -webkit-transform-origin: 100% 50%;
     -webkit-transition: -webkit-transform 0.2s ease-in-out;
     outline: 0;
+    z-index:100;
 }
 
 #toc.smallnav {
