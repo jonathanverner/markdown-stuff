@@ -47,6 +47,16 @@ jQuery(document).ready( function () {
   });
 })
 
+function toggleToc() {
+  var toc = this.document.getElementById('toc');
+  if (toc.classList.contains('showtoc')) {
+    toc.classList.remove('showtoc');
+    toc.classList.add('hidetoc');
+  } else {
+    toc.classList.remove('hidetoc');
+    toc.classList.add('showtoc');
+  }
+}
 </script>
 
 <!-- MATHJAX -->
@@ -93,7 +103,7 @@ MML_HTMLorMML"></script>
   </div>
   <ul class="nav navbar-nav navbar-right">
       {% if toc %}
-      <li><a href="#toc"><span class="glyphicon glyphicon-align-justify"></span></a></li>
+      <li><a onclick='toggleToc();'><span class="glyphicon glyphicon-align-justify"></span></a></li>
       {% endif %}
   </ul>
 </nav>
@@ -102,7 +112,7 @@ MML_HTMLorMML"></script>
 {% endif %}
 
 {% if toc %}
-<div id='toc' href='#'>
+<div id='toc' class='hidetoc'>
 {{ toc }}
 </div> <!-- toc -->
 {% endif %}

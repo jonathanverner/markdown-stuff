@@ -127,7 +127,7 @@ h1 .section_number {
 }
 
 #toc {
-    position: absolute;
+    position: fixed;
     right: 0;
     width: 180px;
     top: 0;
@@ -136,10 +136,14 @@ h1 .section_number {
     background: white;
     padding: 10px;
     -webkit-transform-origin: 100% 50%;
-    -webkit-transform: scaleX(0.00001);
     -webkit-transition: -webkit-transform 0.2s ease-in-out;
     outline: 0;
 }
-#toc:target {
+
+.hidetoc {
+    -webkit-transform: scaleX(0.00001);
+}
+
+.showtoc {
     -webkit-transform: scaleX(1);
 }
