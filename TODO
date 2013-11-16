@@ -13,6 +13,12 @@ ELEMENTS/EXTENSIONS
   -- proofs
      - end with a square DONE
      - implement proof references (e.g. "Proof (of #equivalence):")
+     - claims
+     - proof of claims
+
+  -- references
+     - math equations
+     - items in a list
 
   -- html toc generation DONE
 
