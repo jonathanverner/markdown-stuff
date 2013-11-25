@@ -91,12 +91,9 @@ class DefinitionBlockProcessor(BlockProcessor):
 
   END_RE = re.compile(r'(.*){}\s*$', re.DOTALL)
 
-  # FIXME: This should not be hardcoded !!!
-  BLOCKTYPES = ['Theorem','Proposition','Lemma','Fact','Observation','Definition','Example','Remark','Note','Excercise','Notation']
   PROOFS = ['Proof']
 
   def _valid_type(self, tp, match):
-      #return tp in self.BLOCKTYPES
       if not (tp[0].upper()==tp[0] and tp[1:].lower() == tp[1:]):
           return False
       if tp not in self.PROOFS:
