@@ -23,12 +23,14 @@ try:
 except:
     pass
 
-try:
-    from jinja2 import Template
-    Environment(extensions=['jinja2.ext.autoescape'])
-    template_system = "JINJA2"
-except:
-    pass
+if not template_system:
+    try:
+        from jinja2 import Template
+        import jinja2
+        jinja_env=jinja2.Environment(extensions=['jinja2.ext.autoescape'])
+        template_system = "JINJA2"
+    except:
+        pass
 
 
 
