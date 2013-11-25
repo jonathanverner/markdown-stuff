@@ -1,0 +1,13 @@
+# Nested definition blocks #
+
+Defintion: Ahoj, tohle je definice,
+
+Lemma: A tohle je lemma v definici.
+
+ktere jeste pokracuje
+{}
+
+Tady pokračuje definice.
+
+A tady konci
+{}

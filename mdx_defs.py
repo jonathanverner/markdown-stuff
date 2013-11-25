@@ -71,6 +71,9 @@ def build_headings(doc, position='before', format='css'):
     elif format == 'latex':
         return _latex_from_blocktypes(block_types,position)
 
+class EndOfDfBlockException(Exception):
+    pass
+
 class DefinitionBlockProcessor(BlockProcessor):
 
   START_RE = re.compile(r"""
@@ -102,15 +105,15 @@ class DefinitionBlockProcessor(BlockProcessor):
           return False
       return True
 
+  def test_start_block( self, parent, block ):
+      match = self.START_RE.match(block)
+      return match and self._valid_type(match.group('type'),match.groupdict())
+
+  def test_end_block( self, parent, block ):
+      return self.parser.state.isstate('definition_block') and self.END_RE.match(block)
+
   def test(self, parent, block):
-    match = self.START_RE.match(block)
-    if match and self._valid_type(match.group('type'),match.groupdict()):
-      # Disallow nested definition blocks
-      if self.parser.state.isstate('definition_block'):
-        logger.warn("Nested definition blocks not allowed: %r" % block)
-        return False
-      return True
-    return False
+      return self.test_start_block(parent, block) or self.test_end_block(parent, block)
 
   def add_info(self, element, match):
     el_classes = ['block',match['type']]
@@ -156,35 +159,61 @@ class DefinitionBlockProcessor(BlockProcessor):
         ref.set('key',key)
 
   def run(self, parent, blocks):
-    block = blocks.pop(0)
-    m = self.START_RE.match(block).groupdict()
-    def_element = etree.SubElement(parent, 'div')
-    typ = m['type']
-    self.add_info(def_element,m)
-    self.parser.state.set('definition_block')
-    block_text = m['rest']
-    m = self.END_RE.match(block_text)
-    if m:
-      block_text = m.group(1)
-      end_block = True
-    else:
-      end_block = False
-    while not end_block:
-      self.parser.parseBlocks(def_element,[block_text])
-      block_text = blocks.pop(0)
-      m = self.END_RE.match(block_text)
-      if m:
-        block_text = m.group(1)
-        end_block = True
-      if len(blocks) == 0:
-        break;
-    if not end_block:
-      logger.warn("Unterminated definition block: %r" % block)
-    self.parser.parseBlocks(def_element,[block_text])
-    self.parser.state.reset()
-    if typ in self.PROOFS:
-        qed = etree.SubElement(def_element,'span')
-        qed.set('class','qed')
+      # Process the first of the remaining blocks
+      # (blocks are separated by blank lines)
+      block = blocks.pop(0)
+
+      # We are starting a new definition/lemma
+      if self.test_start_block(parent,block):
+          # Extract info about the definition/lemma, etc.
+          m = self.START_RE.match(block).groupdict()
+          typ = m['type']
+
+          # Create a new div to hold this definition/lemma
+          def_element = etree.SubElement(parent, 'div')
+
+          # Add info about the element to the etree
+          self.add_info(def_element,m)
+
+          # Take the remainder of this block (i.e. withouth the
+          # definition header) and add it to the list of blocks
+          # to process
+          blocks.insert(0,m['rest'])
+
+          # Add a definition_block to the current state stack
+          self.parser.state.set('definition_block')
+
+          # Recursively process the blocks till we find
+          # the end of this definition/lemma
+          try:
+              end_found = False
+              self.parser.parseBlocks(def_element,blocks)
+          except EndOfDfBlockException:
+              end_found = True
+
+          if not end_found:
+              logger.warn("Unterminated definition block")
+
+          # Pop the current definition_block from the state stack
+          self.parser.state.reset()
+
+          # Test whether we are ending a proof and
+          # add a QED sign if yes
+          if typ in self.PROOFS:
+              qed = etree.SubElement(def_element,'span')
+              qed.set('class','qed')
+
+      # We are ending a definition/lemma
+      else:
+
+          last_text = self.END_RE.match(block).group(1)
+          self.parser.parseBlocks(parent,[last_text])
+
+          # there's no other way to exit the parseBlocks
+          # completely except consuming all the blocks
+          # (we still need them) or throwing an exception
+          raise EndOfDfBlockException()
+
 
 
 class DefinitionBlockExtension(markdown.Extension):
