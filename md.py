@@ -41,7 +41,7 @@ def render_template(tpl, context):
         return dtpl.render(django.template.Context(context))
 
     elif template_system == "JINJA2":
-        dtpl = Template(tpl)
+        dtpl = jinja_env.Template(tpl)
         return dtpl.render(context)
     else:
         logging.getLogger("md").warn("No template library found!")
