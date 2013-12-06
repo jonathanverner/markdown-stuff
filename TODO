@@ -7,30 +7,48 @@ ELEMENTS/EXTENSIONS
 
   -- bibliography
      - basic bib-file support
-     - http://www.ams.org/mrlookup support for unknown refs
      - google scholar support for unknown refs
+     - doi/mref support ( {ref:doi:123123}, {ref:mref:123123}, {ref:arxiv:123123} ...)
+         - http://www.ams.org/mrlookup support for unknown refs
+
+  -- sections
+     - encapsulate sections into a section element
+       (i.e. each # ... # type title starts a new section/subsection)
 
   -- proofs
      - end with a square DONE
      - implement proof references (e.g. "Proof (of #equivalence):")
      - claims
-     - proof of claims
+       -- number them separately, with numbers coming after
+          the claim
        -- end their proofs with a full square DONE
 
   -- references
+     - doi/mref/arxiv/other support ( {ref:doi:123123}, {ref:mref:123123}, {ref:arxiv:123123} ...)
      - math equations
      - items in a list
-
-  -- html toc generation DONE
+     - images
+     - all elements ?
+     - retain keys in elements
 
   -- images
      - rethink conversions
      - include svgs in html
-     - references & numbering
 
   -- localization
 
   -- code hilighting
+
+  -- macros
+     - rework so that parentheses, quotes etc may be used in
+       macro parameters (need to move away from regular expressions)
+
+  -- custom tags/attributes
+     - introduce syntax to add custom attributes to the current element
+     - introduce syntax to add custom tags
+
+  -- presentations
+     - investigate remarkjs.com
 
 CONFIGURATION
 
@@ -43,9 +61,25 @@ DOCUMENTATION
 
   -- reklamni spot
 
+HTML
+
+  -- html toc generation
+     - basic toc DONE
+     - short titles
+     - make toc elements collapsible
+
+  -- investigate pop-over layout
+     (maybe typeset math on first hover?)
+
+  -- allow referencing by key?
+
+  -- breadcrumb navigation
+
 LATEX
 
   -- generate block definition environments definitions DONE
+  -- a basic convertor from latex
+
 KATE
   -- hilight urls DONE
 
