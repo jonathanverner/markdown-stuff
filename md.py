@@ -100,6 +100,21 @@ def filter(css_selector, lxmltree):
         logger.critical("Error parsing filter: "+css_selector+" ("+str(e)+")")
         return []
 
+def query( css_selector, lxmltree ):
+    """ Returns a list of maps containing the properties of elements
+        from @lxmltree matching the @css_selector. Each map moreover
+        contains a 'tag' key (with the respective element tagname) and
+        a 'text_content' key (with the text content of the element).
+    """
+    ret = []
+    for e in filter(css_selector,lxmltree):
+        e_map = {
+            'tag':e.tag,
+            'text_content':text_content(e)
+        }
+        e_map.update(e.attrib)
+        ret.append( e_map )
+    return ret
 
 
 
@@ -117,6 +132,7 @@ def main():
   parser.add_argument('-s', '--subs',help='template substitutions',default='')
   parser.add_argument('--filter',help='process only elements matching a given css selector',default=None)
   parser.add_argument('-q', '--query',help='print out elements matching a given css selector')
+  parser.add_argument('--attrs', help='a comma separated list of attribute names to print (in conjunction with -q)', default='text_content')
   parser.add_argument('--full',help='print out elements matching a given css selector',action='store_true')
   parser.add_argument('--verbose', '-v', action='count',help='be verbose',default=0)
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
@@ -142,18 +158,10 @@ def main():
   md, html = render_md(unicode(args.document.read(),encoding='utf-8',errors='ignore'),tree=None)
 
   if args.query:
-      try:
-          selector = CSSSelector(args.query)
-      except Exception, e:
-          logger.critical("Error parsing query: "+args.query+" ("+str(e)+")")
-          exit(-1)
-      html_tree = lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
-      for e in selector(html_tree):
-          print e.tag, e.attrib
-          if args.full:
-              print "-"*80
-              print text_content(e),
-              print "-"*80
+      html_tree = parse_html(html,tree='lxml')
+      attrs = args.attrs.split(',')
+      for e in query(args.query, html_tree):
+          print ','.join([ attr+'='+e[attr] for attr in attrs if attr in e ])
       return
 
   if args.filter:
