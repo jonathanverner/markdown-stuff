@@ -14,6 +14,7 @@
 <!--<!ENTITY definitionblockregex "^\s*(\{#[^}]*\})?\s*([A-Z]\w*)\s*(\([^)]*\)?:">-->
 <!ENTITY definitionblockregex "^\s*([A-Z]\w*)\s*(\([^)]*\))?:">
 <!ENTITY refregex "\{ref:#[^}]*\}">
+<!ENTITY linkregex "\[[^]]*\]\(\s*((https?)|(ftps?)|(ssh)|(git)|(mailto))[^)]*\)">
 <!ENTITY anchorregex "\{#[^}]*\}">
 <!ENTITY strongemphasisregex "(\s|^)[\*_]{3}[^\*_]+[\*_]{3}(\s|\.|,|;|:|\-|\?|$)">
 <!ENTITY strongregex "(\s|^)[\*_]{2}[^\s]{1}[^\*_]+[\*_]{2}(\s|\.|,|;|:|\-|\?|$)">
@@ -88,6 +89,7 @@
           <RegExpr attribute="strongemphasis" String="&strongemphasisregex;"/>
 	  <RegExpr attribute="Reference" String="&refregex;" />
 	  <RegExpr attribute="Reference" String="&anchorregex;" />
+	  <RegExpr attribute="Reference" String="&linkregex;" />
     </context>
       
     </contexts>
