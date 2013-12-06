@@ -32,7 +32,8 @@ if not template_system:
     except:
         pass
 
-
+logger = logging.getLogger("md")
+root_logger = logging.getLogger()
 
 
 def render_template(tpl, context):
@@ -138,8 +139,7 @@ def main():
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
 
   args = parser.parse_args()
-  logger =  logging.getLogger("md")
-  root_logger = logging.getLogger()
+
   root_logger.setLevel(logging.FATAL-args.verbose*10)
 
   if not args.template:
