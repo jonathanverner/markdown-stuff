@@ -41,6 +41,11 @@ def _css_from_blocktypes(types, position):
         space_after=''
     for bt in types:
         css += '.block_heading[type="'+bt+'"]:'+position+" {\n  content:'"+bt+space_after+"'\n}\n"
+
+        # Proofs have special style (normal italic)
+        if bt in DefinitionBlockProcessor.PROOFS:
+            css += '.block_heading[type="'+bt+'"] {\n  font-style:italic;\n  font-weight:normal;\n}\n'
+            css += '.block_heading[type="'+bt+'"] {\n  font-style:italic;\n  font-weight:normal;\n}\n'
     return css
 
 def _latex_from_blocktypes(types,position):
@@ -90,7 +95,7 @@ class DefinitionBlockProcessor(BlockProcessor):
       (?P<rest>.*)                    # and the rest of the block
   """, re.VERBOSE | re.DOTALL)
 
-  PROOF_REFERENCE_RE = re.compile(r"""\s*of\s* #(?P<id>[^\s]*)""")
+  PROOF_REFERENCE_RE = re.compile(r"""\s*of\s* ((#(?P<refid>[^\s]*))|(?P<text>.*))\s*""")
 
   END_RE = re.compile(r'(.*){}\s*$', re.DOTALL)
 
@@ -152,11 +157,33 @@ class DefinitionBlockProcessor(BlockProcessor):
             ref_heading.text = match['references']
 
     elif match['name']:
-        key = self.PROOF_REFERENCE_RE.match(match['name']).groupdict()['id'];
+        # Handle Proof (of ...) cases since the defs extension
+        # runs very early, there will be no chance to expand
+        # references, so we have to do it ourselves here
+        # TODO: rethink the order in which extensions run,
+        # maybe we can run later
+
         referenced_block = etree.SubElement(element,'span')
+
+        # the (of ...) should be in parentheses, so set the appropriate class name
+        referenced_block.set('class','block_name')
+        matches = self.PROOF_REFERENCE_RE.match(match['name']).groupdict();
+
+        # TODO: Localization ('of' needs to be replaced by a localized version)
         referenced_block.text = 'of '
-        ref = etree.SubElement(referenced_block,'ref')
-        ref.set('key',key)
+
+        # If there was a reference, we deal with it
+        if matches['refid']:
+            ref = etree.SubElement(referenced_block,'ref')
+            ref.set('key',matches['refid'])
+
+        # Otherwise just copy the ... into the text
+        else:
+            referenced_block.text = referenced_block.text + matches['text']
+
+            # Save the ... into the name key so that the latex renderer
+            # can access it and can construct the appropriate \begin{proof}[Proof of ...]
+            element.set('name',match['type']+' '+referenced_block.text)
 
   def run(self, parent, blocks):
       # Process the first of the remaining blocks
