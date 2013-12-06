@@ -54,6 +54,8 @@ def render_template(tpl, context):
         return tpl
 
 def text_content(element):
+    """ Returns the contents of the element @element
+        converted to plain text """
     ret = ''
     if element.text:
         ret += element.text
