@@ -62,6 +62,47 @@ def text_content(element):
         ret += element.tail
     return ret
 
+def parse_html( html, tree ):
+    """ Parses html as an
+           - lxml.etree (@tree='lxml')
+           - markdown.util.etree (@tree='md')
+    """
+    if tree == 'lxml':
+        return lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+    else:
+        return etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+
+def render_md( md_text, tree = None ):
+    """ Converts the (unicode) markdown @md_text to html.
+        And returns the pair (md,html) where
+          md is the resulting parser instance
+        and the html is
+             - html string (@tree = None)
+             - parsed lxml.etree (@tree='lxml')
+             - parsed markdown.util.etree (@tree='md')
+    """
+    md = markdown.Markdown(extensions=['extra','defs','mymathjax','wikilinks','headerid','references','meta'])
+    doc = mdx_macros.pre_process(md_text)
+    html = md.convert(doc)
+    if tree:
+        return md, parse_html(html, tree)
+    else:
+        return md, html
+
+def filter(css_selector, lxmltree):
+    """ Returns an iterable over the elements from @lxmltree matching
+        the css selector @css_selector
+    """
+    try:
+        selector = CSSSelector(css_selector)
+        return selector(lxmltree)
+    except Exception, e:
+        logger.critical("Error parsing filter: "+css_selector+" ("+str(e)+")")
+        return []
+
+
+
+
 def main():
   format_exts = {
     'html':'html',
@@ -98,10 +139,7 @@ def main():
       logger.critical('Could not open template file'+str(e))
       exit(-1)
 
-  md = markdown.Markdown(extensions=['extra','defs','mymathjax','wikilinks','headerid','references','meta'])
-  doc = unicode(args.document.read(),encoding='utf-8',errors='ignore')
-  doc = mdx_macros.pre_process(doc)
-  html = md.convert( doc )
+  md, html = render_md(unicode(args.document.read(),encoding='utf-8',errors='ignore'),tree=None)
 
   if args.query:
       try:
@@ -119,16 +157,11 @@ def main():
       return
 
   if args.filter:
-      try:
-          selector = CSSSelector(args.filter)
-      except Exception, e:
-          logger.critical("Error parsing filter: "+args.query+" ("+str(e)+")")
-          exit(-1)
-      html_tree = lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
-      html = '\n'.join([lxml.etree.tostring(e) for e in selector(html_tree)])
+      html_tree = parse_html(html,tree='lxml')
+      html = '\n'.join([lxml.etree.tostring(e) for e in filter(args.filter, html_tree)])
 
 
-  html_tree = etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+  html_tree = parse_html(html,tree='md')
 
   dct = {}
 
