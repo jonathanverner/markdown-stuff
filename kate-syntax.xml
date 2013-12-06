@@ -6,7 +6,7 @@
     Dual-Licensed under both GPL and BSD licenses.
 
     Extended 2009 Claes Holmerson. http://github.com/claes/kate-markdown/
-    
+
     Modified 2013 Jonathan Verner. http://jonathan.verner.matfyz.cz
 -->
 <!DOCTYPE language SYSTEM "language.dtd"
@@ -25,7 +25,7 @@
   <highlighting>
     <contexts>
       <context attribute="Normal Text" lineEndContext="#stay" name="Normal">
-	
+
         <DetectChar context="blockquote" char="&gt;" column="0"/>
         <RegExpr attribute="h1" String="^#\s.*[#]?$"/>
         <RegExpr attribute="h2" String="^##\s.*[#]?$"/>
@@ -35,24 +35,24 @@
         <RegExpr attribute="h6" String="^######\s.*[#]?$"/>
 	<RegExpr attribute="meta" String="^(Title|Author|Date|Copyright|Revision|CSS|LaTeX\ XSLT|Categories|Tags|BaseName|Excerpt|Email|Subject|Keywords):(.*)+$"/>
 	<RegExpr attribute="code" String="^([\s]{4,}|\t+).*$"/>
- 	<RegExpr context="DefinitionBlock" String="&definitionblockregex;" dynamic="true" lookAhead="true" /> 
+ 	<RegExpr context="DefinitionBlock" String="&definitionblockregex;" dynamic="true" lookAhead="true" />
 
- <IncludeRules context="inc"/>  
+ <IncludeRules context="inc"/>
       </context>
-      
+
       <context attribute="DefinitionBlock" lineEndContext="#stay" name="DefinitionBlock" dynamic="true">
          <Detect2Chars char="{" char1="}" context="#pop" />
 	 <RegExpr attribute="defblockemphasis" String="&emphasisregex;"/>
-	 <IncludeRules context="inc" /> 
+	 <IncludeRules context="inc" />
 	 <StringDetect String="%2" attribute="DefinitionName" dynamic="true"/>
 	  <StringDetect String="%1" attribute="DefinitionHead" dynamic="true"/>
       </context>
-      
+
       <context attribute="InlineMath" lineEndContext="#stay" name="InlineMathJAX">
 	<Detect2Chars attribute="InlineMath" char="\" char1=")" context="#pop"/>
 	<DetectChar attribute="InlineMath" char="$" context="#pop"  />
       </context>
-      
+
      <context attribute="DisplayMath" lineEndContext="#stay" name="DisplayMathJAX">
        	<Detect2Chars attribute="DisplayMath" char="\" char1="]" context="#pop"/>
 	<Detect2Chars attribute="DisplayMath" char="$" char1="$" context="#pop"/>
@@ -91,12 +91,12 @@
 	  <RegExpr attribute="Reference" String="&anchorregex;" />
 	  <RegExpr attribute="Reference" String="&linkregex;" />
     </context>
-      
+
     </contexts>
     <itemDatas>
       <itemData name="DefinitionBlock" defStyleNum="dsNormal" italic="true"/>
-      <itemData name="InlineMath" defStyleNum="dsOthers" spellChecking="false"/> 
-      <itemData name="DisplayMath" defStyleNum="dsOthers" spellChecking="false"/> 
+      <itemData name="InlineMath" defStyleNum="dsOthers" spellChecking="false"/>
+      <itemData name="DisplayMath" defStyleNum="dsOthers" spellChecking="false"/>
       <itemData name="ReferenceAnchor" defStyleNum="dsDataType" spellChecking="false"/>
       <itemData name="Reference" defStyleNum="dsDataType" spellChecking="false"/>
       <itemData name="DefinitionHead" defStyleNume="dsNormal" bold="true"/>
@@ -114,7 +114,7 @@
       <itemData name="h5" defStyleNum="dsFunction" bold="true"/>
       <itemData name="h6" defStyleNum="dsFunction" bold="true"/>
       <itemData name="meta" defStyleNum="dsComment"/>
-            <itemData name="blockquote" defStyleNum="dsDataType"/>
+      <itemData name="blockquote" defStyleNum="dsDataType"/>
       <itemData name="bq-emphasis" defStyleNum="dsDataType" italic="true"/>
       <itemData name="bq-strong" defStyleNum="dsDataType" bold="true"/>
       <itemData name="bullet" defStyleNum="dsFloat"/>
