@@ -54,6 +54,9 @@ class laTeXRenderer(object):
             name_ref=''
           environment_type = classes[0].lower()
           output +='\n\\begin{'+environment_type+'}'+name_ref+'\n'+self._escape(child.text).strip()+self._render(child).strip()+'\n\\end{'+environment_type+'}\n'
+      elif 'qed' in child.get('class',''):
+          if 'nested' in child.get('class',''):
+              output+=r'\renewcommand{\qedsymbol}{$\blacksquare$}'+"\n"
       elif child.tag == 'em':
         output+='\\emph{'+self._escape(child.text).strip()+self._render(child).strip()+'}'
       elif child.tag == 'strong':

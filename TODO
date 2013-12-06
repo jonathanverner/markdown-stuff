@@ -15,6 +15,7 @@ ELEMENTS/EXTENSIONS
      - implement proof references (e.g. "Proof (of #equivalence):")
      - claims
      - proof of claims
+       -- end their proofs with a full square DONE
 
   -- references
      - math equations

@@ -24,6 +24,11 @@ logger =  logging.getLogger(__name__)
 
 def _css_from_blocktypes(types, position):
     css = u"""
+.qed.nested:after {
+  content:'■';
+  font-size:1.5em;
+}
+
 .qed:after {
   content:'□';
   font-size:1.5em;
@@ -100,6 +105,11 @@ class DefinitionBlockProcessor(BlockProcessor):
   END_RE = re.compile(r'(.*){}\s*$', re.DOTALL)
 
   PROOFS = ['Proof']
+
+  def __init__(self, parser):
+      BlockProcessor.__init__(self,parser)
+      self.nested_proofs = 0
+
 
   def _valid_type(self, tp, match):
       if not (tp[0].upper()==tp[0] and tp[1:].lower() == tp[1:]):
@@ -210,6 +220,11 @@ class DefinitionBlockProcessor(BlockProcessor):
           # Add a definition_block to the current state stack
           self.parser.state.set('definition_block')
 
+          # Keep track of nested proofs
+          # (so that we may end them with the right qed symbol)
+          if typ in self.PROOFS:
+              self.nested_proofs += 1
+
           # Recursively process the blocks till we find
           # the end of this definition/lemma
           try:
@@ -228,7 +243,11 @@ class DefinitionBlockProcessor(BlockProcessor):
           # add a QED sign if yes
           if typ in self.PROOFS:
               qed = etree.SubElement(def_element,'span')
-              qed.set('class','qed')
+              if self.nested_proofs > 1:
+                  qed.set('class','qed nested')
+              else:
+                  qed.set('class','qed')
+              self.nested_proofs -=1
 
       # We are ending a definition/lemma
       else:
