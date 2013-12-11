@@ -64,6 +64,18 @@ class laTeXRenderer(object):
       elif child.tag == 'ref':
         key = child.get('key','')
         output+='\\ref{'+key+'}'
+      elif child.tag == 'a':
+          url = child.get('href')
+          render_chld = self._render(child)
+          if child.text:
+              txt = child.text + render_chld
+          else:
+              txt = render_chld
+          txt = txt.strip()
+          if len(txt) > 0:
+              output+='\\href{'+url+'}{'+txt+'}'
+          else:
+              output+='\\url{'+url+'}'
       elif child.tag == 'img':
           fname = child.get('src')
           ext = ''
