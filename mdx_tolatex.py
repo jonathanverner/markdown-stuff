@@ -72,6 +72,11 @@ class laTeXRenderer(object):
         key = child.get('key','')
         output+='\\ref{'+key+'}'
       elif child.tag == 'a':
+          # FIXME:
+          # Here we are relying on the fact that
+          # we have already processed <ref> tags, so
+          # this <a> element is not a descendant of a <ref> tag
+          # so it should point to somewhere out of this document.
           url = child.get('href')
           render_chld = self._render(child)
           if child.text:
