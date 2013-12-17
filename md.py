@@ -9,6 +9,7 @@ import lxml
 from lxml.cssselect import CSSSelector
 from  mdx_tolatex import laTeXRenderer
 from mdx_defs import build_headings
+from postprocess import build_sections
 import logging
 import mdx_macros
 
@@ -158,19 +159,19 @@ def main():
       logger.critical('Could not open template file'+str(e))
       exit(-1)
 
-  md, html = render_md(unicode(args.document.read(),encoding='utf-8',errors='ignore'),tree=None)
+  md, lxml_tree = render_md(unicode(args.document.read(),encoding='utf-8',errors='ignore'),tree='lxml')
+  lxml_tree = build_sections(lxml_tree)
 
   if args.query:
-      html_tree = parse_html(html,tree='lxml')
       attrs = args.attrs.split(',')
-      for e in query(args.query, html_tree):
+      for e in query(args.query, lxml_tree):
           print ','.join([ attr+'='+e[attr] for attr in attrs if attr in e ])
       return
 
   if args.filter:
-      html_tree = parse_html(html,tree='lxml')
-      html = '\n'.join([lxml.etree.tostring(e) for e in filter(args.filter, html_tree)])
-
+      html = '\n'.join([lxml.etree.tostring(e) for e in filter(args.filter, lxml_tree, include_references=not args.norefs)])
+  else:
+      html = lxml.etree.tostring(lxml_tree)
 
   html_tree = parse_html(html,tree='md')
 

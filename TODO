@@ -13,7 +13,7 @@ ELEMENTS/EXTENSIONS
 
   -- sections
      - encapsulate sections into a section element
-       (i.e. each # ... # type title starts a new section/subsection)
+       (i.e. each # ... # type title starts a new section/subsection) DONE
 
   -- proofs
      - end with a square DONE
