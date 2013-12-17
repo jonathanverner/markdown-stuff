@@ -42,7 +42,10 @@ class laTeXRenderer(object):
     for child in node:
       sec_depth = self._sectionDepth(child.tag)
       if sec_depth is not None:
-        output+='\\'+"sub"*sec_depth+'section{'+self._escape(child.text)+self._render(child).strip()+'}\n'
+          if 'do_not_number' in child.get('class',''):
+              output+='\\'+"sub"*sec_depth+'section*{'+self._escape(child.text)+self._render(child).strip()+'}\n'
+          else:
+              output+='\\'+"sub"*sec_depth+'section{'+self._escape(child.text)+self._render(child).strip()+'}\n'
       elif child.tag == 'label':
         output+='\\label{'+child.get('key','')+'} '
       elif child.tag == 'p':
