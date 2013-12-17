@@ -238,8 +238,9 @@ def main():
     output = latex.render_from_dom(html_tree)
 
   dct['content']=output
-  for (k,v) in md.Meta.items():
-    dct[k] = ' '.join(v)
+  if hasattr(md, 'Meta'):
+    for (k,v) in md.Meta.items():
+        dct[k] = ' '.join(v)
 
   dct['toc']=etree.tostring(md.TOC.to_element())
 
