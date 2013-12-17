@@ -138,6 +138,7 @@ def main():
   parser.add_argument('--attrs', help='a comma separated list of attribute names to print (in conjunction with -q)', default='text_content')
   parser.add_argument('--full',help='print out elements matching a given css selector',action='store_true')
   parser.add_argument('--verbose', '-v', action='count',help='be verbose',default=0)
+  parser.add_argument('--renderoptions', help='a comma separated list of key=value pairs which will be passed as options to the renderer',default=None)
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
 
   args = parser.parse_args()
@@ -174,13 +175,21 @@ def main():
   html_tree = parse_html(html,tree='md')
 
   dct = {}
+  render_options = {}
+  if args.renderoptions:
+    try:
+        for opt in args.renderoptions.split(','):
+            key,value = opt.split('=')
+            render_options[key]=eval(value)
+    except Exception, e:
+        logger.warn('Bad render options: '+args.renderoptions+' ('+str(e)+')')
 
   if args.format == 'html':
     output = html
     dct['headings_css'] = build_headings(html_tree,position='after',format='css')
   elif args.format == 'latex':
     dct['headings'] = build_headings(html_tree,position='after',format='latex')
-    latex = laTeXRenderer()
+    latex = laTeXRenderer(render_options)
     output = latex.render_from_dom(html_tree)
 
   dct['content']=output

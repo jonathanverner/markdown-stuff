@@ -6,8 +6,12 @@ import re
 logger =  logging.getLogger(__name__)
 
 class laTeXRenderer(object):
-  def __init__(self):
-    self.preserve_underscores = False
+  def __init__(self, options = None):
+      if options:
+          self.options = options
+      else:
+          self.options = {}
+      self.preserve_underscores = False
 
   def render_from_HTML(self, html ):
     tree = etree.fromstring(html.encode('utf-8'))
