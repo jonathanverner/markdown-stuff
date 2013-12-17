@@ -6,10 +6,13 @@ import re
 import markdown
 from markdown.util import etree
 import lxml
+import lxml.etree
 from lxml.cssselect import CSSSelector
+
 from  mdx_tolatex import laTeXRenderer
 from mdx_defs import build_headings
 from postprocess import build_sections
+from utils import get_by_id
 import logging
 import mdx_macros
 
@@ -93,12 +96,53 @@ def render_md( md_text, tree = None ):
     else:
         return md, html
 
-def filter(css_selector, lxmltree):
+def filter(css_selector, lxmltree, include_references = True):
     """ Returns an iterable over the elements from @lxmltree matching
-        the css selector @css_selector
+        the css selector @css_selector. If @include_references is True,
+        the iterable will contain an additional <references> element
+        which will contain all referenced elements not already present.
     """
     try:
         selector = CSSSelector(css_selector)
+        if include_references:
+            refs_selector = CSSSelector('ref')
+            ref_ids = set([])
+            ret = []
+            # Find all references in the selected elements
+            # and store the referenced urls (should be of the form #id)
+            # in ref_ids
+            for ch in selector(lxmltree):
+                ret.append(ch)
+                for ref_node in refs_selector(ch):
+                    a_nodes = ref_node.findall('a')
+                    if len(a_nodes) > 0:
+                        ref_ids.add(a_nodes[-1].get('href',None))
+            if len(ref_ids) > 0:
+                # Create the <references> element and an appropriate heading for it
+                ref_parent = lxml.etree.Element('references')
+                ref_h = lxml.etree.SubElement(ref_parent,'h1')
+                ref_h.set('class','do_not_number')
+                ref_h.text = 'References'
+                references_found = False
+
+                # Iterate over the reference ids and check that they exist
+                # and are not already present in the selected elements
+                for id in sorted(ref_ids):
+                    if id:
+                        logger.debug("Checking reference "+id)
+                        # Only include the reference if it is not already present in the selected elements
+                        if get_by_id(selector(lxmltree),id[1:]) is None:
+                            logger.debug("Adding reference "+id)
+                            ref = get_by_id(lxmltree,id[1:])
+                            if ref is None:
+                                logger.warn("Reference "+id+" not found")
+                            else:
+                                references_found = True
+                                ref_parent.append(ref)
+                # Do not include the <references> element if there were no references
+                if references_found:
+                    ret.append(ref_parent)
+            return ret
         return selector(lxmltree)
     except Exception, e:
         logger.critical("Error parsing filter: "+css_selector+" ("+str(e)+")")
@@ -137,7 +181,7 @@ def main():
   parser.add_argument('--filter',help='process only elements matching a given css selector',default=None)
   parser.add_argument('-q', '--query',help='print out elements matching a given css selector')
   parser.add_argument('--attrs', help='a comma separated list of attribute names to print (in conjunction with -q)', default='text_content')
-  parser.add_argument('--full',help='print out elements matching a given css selector',action='store_true')
+  parser.add_argument('--norefs',help='do not include referenced elements when filtering',action='store_true')
   parser.add_argument('--verbose', '-v', action='count',help='be verbose',default=0)
   parser.add_argument('--renderoptions', help='a comma separated list of key=value pairs which will be passed as options to the renderer',default=None)
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
