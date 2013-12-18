@@ -3,6 +3,8 @@ import os
 from markdown.util import etree
 import re
 
+from utils import get_uri_info
+
 logger =  logging.getLogger(__name__)
 
 class laTeXRenderer(object):
@@ -88,6 +90,11 @@ class laTeXRenderer(object):
               output+='\\href{'+url+'}{'+txt+'}'
           else:
               output+='\\url{'+url+'}'
+          if 'attach_files' in self.options:
+              info = get_uri_info(url)
+              if info['filename']:
+                  output+='\\incfile{'+txt+'}{'+str(info['filename'])+'}{'+str(info['mimetype'])+'}'
+
       elif child.tag == 'img':
           fname = child.get('src')
           ext = ''
