@@ -215,7 +215,7 @@ def main():
   if args.filter:
       html = '\n'.join([lxml.etree.tostring(e) for e in filter(args.filter, lxml_tree, include_references=not args.norefs)])
   else:
-      html = lxml.etree.tostring(lxml_tree)
+      html = lxml.etree.tostring(lxml_tree,method='html')
 
   html_tree = parse_html(html,tree='md')
 
