@@ -74,10 +74,25 @@ def parse_html( html, tree ):
            - lxml.etree (@tree='lxml')
            - markdown.util.etree (@tree='md')
     """
-    if tree == 'lxml':
-        return lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
-    else:
-        return etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+    try:
+        if tree == 'lxml':
+            return lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'), lxml.etree.HTMLParser(encoding='utf-8'))
+        else:
+            return etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
+    except Exception, e:
+        ln = e.position[0]-1
+        col = e.position[1]
+        lns = html.split('\n')
+        logger.warn("XML PARSE ERROR ("+tree+"): Line: "+str(ln)+", Col: "+str(col))
+        logger.warn("----------------")
+        for i in range(-3,4):
+            if i == 0:
+                logger.warn(str(i)+' ***: '+lns[ln+i][:col]+'->'+lns[ln+i][col]+'<-'+lns[ln+i][col+1:])
+            else:
+                logger.warn(str(i)+'    : '+lns[ln+i])
+        logger.warn("----------------")
+        raise e
+
 
 def render_md( md_text, tree = None ):
     """ Converts the (unicode) markdown @md_text to html.
@@ -217,7 +232,7 @@ def main():
   else:
       html = lxml.etree.tostring(lxml_tree,method='html')
 
-  html_tree = parse_html(html,tree='md')
+  html_tree = parse_html(html,tree='lxml')
 
   dct = {}
   render_options = {}
