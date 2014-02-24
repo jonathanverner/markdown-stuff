@@ -190,6 +190,7 @@ def main():
 
   parser = argparse.ArgumentParser(description='A markdown processor')
   parser.add_argument('-t', '--template', help='document template')
+  parser.add_argument('-ao', '--autooutput', help='automatically create the output file with appropriate extension', action='store_true')
   parser.add_argument('-o', '--output', type=argparse.FileType('w'),help='output file')
   parser.add_argument('-f', '--format',help='output format', choices=['html','latex'],default='html')
   parser.add_argument('-s', '--subs',help='template substitutions',default='')
@@ -284,6 +285,13 @@ def main():
 
   if args.output:
     args.output.write(output.encode('utf-8'))
+  elif args.autooutput:
+    extensions = {
+        'html':'.html',
+        'latex':'.tex'
+    }
+    out_fname=args.document.name.strip('.md')+extensions[args.format]
+    open(out_fname,'w').write(output.encode('utf-8'))
   else:
     print output.encode('utf-8')
 
