@@ -3,7 +3,7 @@ import os
 from markdown.util import etree
 import re
 
-from utils import get_uri_info
+from utils import get_uri_info, get_child_by_css_selector
 
 logger =  logging.getLogger(__name__)
 
@@ -68,12 +68,20 @@ class laTeXRenderer(object):
         classes = child.get('class','').split(' ')
         if 'block' in classes:
           classes.remove('block')
-          name_ref = ','.join([child.get('name',''),child.get('references','')])
-          if len(name_ref)>1:
-            name_ref = '['+name_ref.strip(',')+']'
-          else:
-            name_ref=''
           environment_type = classes[0].lower()
+          block_name_tag = get_child_by_css_selector(child, '.block_name')
+          block_refs_tag = get_child_by_css_selector(child, '.block_references')
+          name_ref = []
+          if block_name_tag is not None:
+              name_ref.append(self._render(block_name_tag, ignore_info_nodes=False).strip())
+          if block_refs_tag is not None:
+              name_ref.append(self._render(block_refs_tag, ignore_info_nodes=False).strip())
+          name_ref = ','.join(name_ref)
+          if len(name_ref)>0:
+              if environment_type == 'proof':
+                  name_ref = '[Proof '+name_ref+']'
+              else:
+                  name_ref = '['+name_ref+']'
           output +='\n\\begin{'+environment_type+'}'+name_ref+'\n'+self._render(child).strip()+'\n\\end{'+environment_type+'}\n'
       elif 'qed' in child.get('class',''):
           if 'nested' in child.get('class',''):
