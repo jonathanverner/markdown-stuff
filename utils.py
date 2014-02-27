@@ -1,5 +1,6 @@
 import mimetypes
 import re
+from lxml.cssselect import CSSSelector
 
 def find_children_by_class(parent,cls):
     """ Returns a list of descendants of @parent having
@@ -11,6 +12,13 @@ def find_children_by_class(parent,cls):
             ret.append(ch)
         ret += find_children_by_class(ch,cls)
     return ret
+
+def get_child_by_css_selector(parent,selector):
+    sel = CSSSelector(selector)
+    for ch in sel(parent):
+        return ch
+    return None
+
 
 def get_by_id( elements, id ):
     """ Returns the element with id @id which is either in elements or
