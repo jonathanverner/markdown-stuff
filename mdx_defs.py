@@ -100,7 +100,7 @@ class DefinitionBlockProcessor(BlockProcessor):
       (?P<rest>.*)                    # and the rest of the block
   """, re.VERBOSE | re.DOTALL)
 
-  PROOF_REFERENCE_RE = re.compile(r"""\s*of\s* ((#(?P<refid>[^\s]*))|(?P<text>.*))\s*""")
+  PROOF_REFERENCE_RE = re.compile(r"""\s*of\s* (({ref:#(?P<refid>[^\s]*)})|(?P<text>.*))\s*""")
 
   END_RE = re.compile(r'(.*){}\s*$', re.DOTALL)
 
