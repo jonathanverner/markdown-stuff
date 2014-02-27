@@ -3,7 +3,7 @@ import re
 
 def find_children_by_class(parent,cls):
     """ Returns a list of descendants of @parent having
-        css class @cls in their clas list """
+        css class @cls in their class list """
     ret = []
     for ch in parent:
         classes = ch.get('class','').split(' ')
