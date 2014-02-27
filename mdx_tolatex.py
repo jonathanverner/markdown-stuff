@@ -8,12 +8,14 @@ from utils import get_uri_info
 logger =  logging.getLogger(__name__)
 
 class laTeXRenderer(object):
+  IGNORE_CLASSES = ['section_number','reference_number','block_number', 'block_name','block_references']
+
   def __init__(self, options = None):
       if options:
           self.options = options
       else:
           self.options = {}
-      self.preserve_underscores = False
+      self.math_mode = False
 
   def render_from_HTML(self, html ):
     tree = etree.fromstring(html.encode('utf-8'))
@@ -33,25 +35,35 @@ class laTeXRenderer(object):
   def _escape(self,s):
     if s is None:
       return ''
-    if self.preserve_underscores:
-      ret = s
-    else:
-      ret=s.replace('_','\\'+'_')
+    ret = s
+    if not self.math_mode:
+      ret = ret.replace('_','\\'+'_')
+      ret = ret.replace('&','\\'+'&')
+      ret = ret.replace('%','\\'+'%')
     return ret
 
-  def _render(self, node):
-    output=''
+  def _ignore_node(self,node):
+      for node_c in node.get('class','').split(' '):
+          if node_c in self.IGNORE_CLASSES:
+              return True
+      return False
+
+  def _render(self, node, ignore_info_nodes = True):
+    if  ignore_info_nodes and self._ignore_node(node):
+        return ''
+    output=self._escape(node.text)+' '
     for child in node:
       sec_depth = self._sectionDepth(child.tag)
       if sec_depth is not None:
           if 'do_not_number' in child.get('class',''):
-              output+='\\'+"sub"*sec_depth+'section*{'+self._escape(child.text)+self._render(child).strip()+'}\n'
+              output+='\\'+"sub"*sec_depth+'section*{'+self._render(child).strip()+'}\n'
           else:
-              output+='\\'+"sub"*sec_depth+'section{'+self._escape(child.text)+self._render(child).strip()+'}\n'
+              output+='\\'+"sub"*sec_depth+'section{'+self._render(child).strip()+'}\n'
+
       elif child.tag == 'label':
         output+='\\label{'+child.get('key','')+'} '
       elif child.tag == 'p':
-        output+='\n\n'+self._escape(child.text)+self._render(child)+'\n\n'
+        output+='\n\n'+self._render(child)+'\n\n'
       elif child.tag == 'div':
         classes = child.get('class','').split(' ')
         if 'block' in classes:
@@ -62,14 +74,14 @@ class laTeXRenderer(object):
           else:
             name_ref=''
           environment_type = classes[0].lower()
-          output +='\n\\begin{'+environment_type+'}'+name_ref+'\n'+self._escape(child.text).strip()+self._render(child).strip()+'\n\\end{'+environment_type+'}\n'
+          output +='\n\\begin{'+environment_type+'}'+name_ref+'\n'+self._render(child).strip()+'\n\\end{'+environment_type+'}\n'
       elif 'qed' in child.get('class',''):
           if 'nested' in child.get('class',''):
               output+=r'\renewcommand{\qedsymbol}{$\blacksquare$}'+"\n"
       elif child.tag == 'em':
-        output+='\\emph{'+self._escape(child.text).strip()+self._render(child).strip()+'}'
+        output+='\\emph{'+self._render(child).strip()+'}'
       elif child.tag == 'strong':
-        output+='{\\bf '+self._escape(child.text).strip()+self._render(child).strip()+'}'
+        output+='{\\bf '+self._render(child).strip()+'}'
       elif child.tag == 'ref':
         key = child.get('key','')
         output+='\\ref{'+key+'}'
@@ -107,18 +119,18 @@ class laTeXRenderer(object):
               fname = base+'.pdf'
           output+='\\begin{center}\\includegraphics{'+fname+'}\\end{center}'
       elif child.tag == 'mathjax':
-        self.preserve_underscores=True
-        output+=self._escape(child.text).strip()+self._render(child).strip()
-        self.preserve_underscores=False
+        self.math_mode=True
+        output+=self._render(child).strip()
+        self.math_mode=False
       elif child.tag == 'ul':
         output+='\\begin{itemize}\n  '+self._render(child).strip()+'\n\\end{itemize}'
       elif child.tag == 'ol':
         output+='\\begin{enumerate}\n  '+self._render(child).strip()+'\n\\end{enumerate}'
       elif child.tag == 'li':
-        output+='  \\item '+self._escape(child.text).strip()+self._render(child)
+        output+='  \\item '+self._render(child)
       elif child.tag == 'blockquote':
         output+='\\begin{quotation}\n  '+self._render(child).strip()+'\n\\end{quotation}'
       else:
         output+=self._render(child)
-      output += self._escape(child.tail)
+      output +=' '+ self._escape(child.tail)
     return output
