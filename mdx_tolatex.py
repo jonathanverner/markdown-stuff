@@ -140,5 +140,5 @@ class laTeXRenderer(object):
         output+='\\begin{quotation}\n  '+self._render(child).strip()+'\n\\end{quotation}'
       else:
         output+=self._render(child)
-      output +=' '+ self._escape(child.tail)
+      output +=self._escape(child.tail)
     return output
