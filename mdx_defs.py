@@ -59,7 +59,12 @@ def _latex_from_blocktypes(types,position):
     else:
         ret = u''
     for bt in types:
-        if bt not in DefinitionBlockProcessor.PROOFS:
+        if bt in DefinitionBlockProcessor.THM_STYLE:
+            ret += u'\\newtheorem{'+bt.lower()+u'}[subsection]{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+            ret += u'\\newtheorem{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+    ret += u'\\theoremstyle{definition}\n'
+    for bt in types:
+        if bt not in DefinitionBlockProcessor.PROOFS and bt not in DefinitionBlockProcessor.THM_STYLE:
             ret += u'\\newtheorem{'+bt.lower()+u'}[subsection]{'+bt[0].upper()+bt[1:].lower()+u'}\n';
             ret += u'\\newtheorem{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
     return ret
@@ -105,6 +110,8 @@ class DefinitionBlockProcessor(BlockProcessor):
   END_RE = re.compile(r'(.*){}\s*$', re.DOTALL)
 
   PROOFS = ['Proof']
+
+  THM_STYLE = ['Theorem','Observation','Proposition','Lemma', 'Corollary']
 
   def __init__(self, parser):
       BlockProcessor.__init__(self,parser)
