@@ -290,7 +290,10 @@ def main():
         'html':'.html',
         'latex':'.tex'
     }
-    out_fname=args.document.name.strip('.md')+extensions[args.format]
+    base = args.document.name;
+    if base.endswith('.md'):
+        base = base[:-3]
+    out_fname=base+extensions[args.format]
     open(out_fname,'w').write(output.encode('utf-8'))
   else:
     print output.encode('utf-8')
