@@ -10,12 +10,14 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \definecolor{svlinks}{rgb}{.0,0.3,0.6} %tmavě modrá
+\catcode`\&=11
 \usepackage[bookmarks, colorlinks=true,pdfhighlight=/O,linkcolor=svlinks,urlcolor=svlinks,
             pdftitle={ {{ title }}  },
             pdfauthor={ {{ author }} },
             pdfsubject={  {{ subject }} },
             pdfkeywords={ {{ keywords }} }
             ]{hyperref}
+\catcode`\&=4
 \usepackage[margin=1.5cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{attachfile}
@@ -79,6 +81,7 @@ numberstyle=\small\color{black}
 \parskip=2mm
 \begin{document}
 
+\catcode`\&=11
 {% if title %}
 \title{ {{ title }} }
 {% if date %}
@@ -88,6 +91,7 @@ numberstyle=\small\color{black}
 {% endif %}{% if email %}
 %\email{ {{ email }} }
 {% endif %}
+\catcode`\&=4
 
 \maketitle
 {% endif %}
