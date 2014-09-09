@@ -29,7 +29,6 @@ except:
 
 if not template_system:
     try:
-        from jinja2 import Template
         import jinja2
         jinja_env=jinja2.Environment(extensions=['jinja2.ext.autoescape'])
         template_system = "JINJA2"
@@ -46,7 +45,8 @@ def render_template(tpl, context):
         return dtpl.render(django.template.Context(context))
 
     elif template_system == "JINJA2":
-        dtpl = jinja_env.Template(tpl)
+        print jinja_env.extensions
+        dtpl = jinja_env.from_string(tpl)
         return dtpl.render(context)
     else:
         logging.getLogger("md").warn("No template library found!")
