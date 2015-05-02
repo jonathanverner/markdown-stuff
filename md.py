@@ -187,6 +187,7 @@ def main():
     'latex':'tex'
   }
   default_tplfname = os.environ['HOME']+'/.md/default-template'
+  fallback_tplfname = os.path.realpath(__file__)+'/default-template'
 
   parser = argparse.ArgumentParser(description='A markdown processor')
   parser.add_argument('-t', '--template', help='document template')
@@ -210,8 +211,11 @@ def main():
     try:
       template = unicode(file(default_tplfname+'.'+format_exts[args.format],'r').read(),encoding='utf-8',errors='ignore')
     except:
-      logger.warn('Could not open default ')
-      template = '{{ content }}'
+      try:
+        template = unicode(file(default_tplfname+'.'+format_exts[args.format],'r').read(),encoding='utf-8',errors='ignore')
+      except:
+        logger.warn('Could not open default ')
+        template = '{{ content }}'
   else:
     try:
       template = unicode(file(args.template,'r').read(),encoding='utf-8',errors='ignore')
