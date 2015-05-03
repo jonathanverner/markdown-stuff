@@ -180,15 +180,30 @@ def query( css_selector, lxmltree ):
     return ret
 
 
-
-def main():
+def load_template(tpl, fmt):
   format_exts = {
     'html':'html',
     'latex':'tex'
   }
-  default_tplfname = os.environ['HOME']+'/.md/default-template'
-  fallback_tplfname = os.path.dirname(os.path.realpath(__file__))+'/default-template'
+  base_name = tpl or 'default-template'
+  search_dirs = [ '.', os.environ['HOME'], os.path.dirname(os.path.realpath(__file__)) ]
 
+  for dirname in search_dirs:
+    try:
+      fname = os.path.join(dirname,base_name+'.'+format_exts[fmt])
+      return unicode(file(fname,'r').read(),encoding='utf-8',errors='ignore')
+    except:
+      pass
+
+  if tpl:
+    logger.critical('Could not open template file ' + tpl)
+    exit(-1)
+  else:
+    logger.warn('Could not open default template')
+    template = '{{ content }}'
+
+
+def main():
   parser = argparse.ArgumentParser(description='A markdown processor')
   parser.add_argument('-t', '--template', help='document template')
   parser.add_argument('-ao', '--autooutput', help='automatically create the output file with appropriate extension', action='store_true')
@@ -207,23 +222,12 @@ def main():
 
   root_logger.setLevel(logging.FATAL-args.verbose*10)
 
-  if not args.template:
-    try:
-      template = unicode(file(default_tplfname+'.'+format_exts[args.format],'r').read(),encoding='utf-8',errors='ignore')
-    except:
-      try:
-        template = unicode(file(fallback_tplfname+'.'+format_exts[args.format],'r').read(),encoding='utf-8',errors='ignore')
-      except:
-        logger.warn('Could not open default ')
-        template = '{{ content }}'
-  else:
-    try:
-      template = unicode(file(args.template,'r').read(),encoding='utf-8',errors='ignore')
-    except Exception,e:
-      logger.critical('Could not open template file'+str(e))
-      exit(-1)
+  template = load_template(args.template, args.format)
 
-  md, lxml_tree = render_md(unicode(args.document.read(),encoding='utf-8',errors='ignore'),tree='lxml')
+  doc_source = unicode(args.document.read(),encoding='utf-8',errors='ignore');
+  comments_re = re.compile('^\/\/.*$', re.MULTILINE)
+  doc_source = comments_re.sub('',doc_source)
+  md, lxml_tree = render_md(doc_source,tree='lxml')
   lxml_tree = build_sections(lxml_tree)
 
   if args.query:
