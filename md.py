@@ -94,7 +94,7 @@ def parse_html( html, tree ):
         raise e
 
 
-def render_md( md_text, tree = None ):
+def render_md( md_text, tree = None, ext_config = {} ):
     """ Converts the (unicode) markdown @md_text to html.
         And returns the pair (md,html) where
           md is the resulting parser instance
@@ -103,7 +103,7 @@ def render_md( md_text, tree = None ):
              - parsed lxml.etree (@tree='lxml')
              - parsed markdown.util.etree (@tree='md')
     """
-    md = markdown.Markdown(extensions=['extra','defs','mymathjax','wikilinks','headerid','references','meta'])
+    md = markdown.Markdown(extensions=['extra','defs','mymathjax','wikilinks','headerid','references','meta'],extension_configs=ext_config)
     doc = mdx_macros.pre_process(md_text)
     html = md.convert(doc)
     if tree:
@@ -214,6 +214,7 @@ def main():
   parser.add_argument('-q', '--query',help='print out elements matching a given css selector')
   parser.add_argument('--attrs', help='a comma separated list of attribute names to print (in conjunction with -q)', default='text_content')
   parser.add_argument('--norefs',help='do not include referenced elements when filtering',action='store_true')
+  parser.add_argument('--numberreferencedonly',help='only number blocks which are actually referenced',action='store_true')
   parser.add_argument('--verbose', '-v', action='count',help='be verbose',default=0)
   parser.add_argument('--renderoptions', help='a comma separated list of key=value pairs which will be passed as options to the renderer',default=None)
   parser.add_argument('document',type=argparse.FileType('r'),help='filename of the document to transform')
@@ -227,7 +228,7 @@ def main():
   doc_source = unicode(args.document.read(),encoding='utf-8',errors='ignore');
   comments_re = re.compile('^\/\/.*$', re.MULTILINE)
   doc_source = comments_re.sub('',doc_source)
-  md, lxml_tree = render_md(doc_source,tree='lxml')
+  md, lxml_tree = render_md(doc_source,tree='lxml',ext_config={'references':{'number_referenced_only':args.numberreferencedonly}})
   lxml_tree = build_sections(lxml_tree)
 
   if args.query:

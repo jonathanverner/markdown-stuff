@@ -92,15 +92,16 @@ class TOCNode(object):
         node.title = title
 
 class BlockNumberingProcessor(Treeprocessor):
-  def __init__(self,md_instance):
+  def __init__(self,md_instance,number_referenced_only,number_by_type):
     self.depth_limit=1
     self.current_section_tuple = [0]*self.depth_limit
     self.current_numbering={}
     self.inBlock = False
     self.inBlockType = ''
     self.labels = {}
-    self.number_by_type = False
+    self.number_by_type = number_by_type
     self.md = md_instance
+    self.number_referenced_only = number_referenced_only
 
   def section(self, tag):
     depth = self._tag2depth(tag)
@@ -130,6 +131,9 @@ class BlockNumberingProcessor(Treeprocessor):
         typ = 'generic'
     logger.debug('BLOCK_NUMBER:'+str(self.current_numbering))
     return self.section_number(depth=self.depth_limit)+'.'+str(self.current_numbering[typ])
+
+  def block_is_labeled(self,block):
+    return block.find('.//label') is not None
 
   def next_number(self, typ):
     if not self.number_by_type:
@@ -185,15 +189,22 @@ class BlockNumberingProcessor(Treeprocessor):
         number.text = self.section_number()
         number.tail=title
         self.md.TOC.insert_section(self.section_number(),title)
-      elif 'block' in child_classes and not 'do_not_number' in child_classes:
-        self.current_number = self.next_number(child.get('type',''))
-        child.set('id',self.current_number)
-        child.set('class',child.get('class','')+' anchor')
+      elif 'block' in child_classes:
         self.inBlock = True
         self.inBlockType = child.get('type','')
+        self.doNotNumber = True
         clearInBlock = True
+        if not 'do_not_number' in child_classes:
+          if not self.number_referenced_only or self.block_is_labeled(child):
+            self.current_number = self.next_number(child.get('type',''))
+            child.set('id',self.current_number)
+            child.set('class',child.get('class','')+' anchor')
+            self.doNotNumber = False
+          else:
+            child.set('class',child.get('class','')+' do_not_number')
       elif 'block_number' in child_classes:
-        child.text = self.current_number
+        if not self.doNotNumber:
+          child.text = self.current_number
       elif 'label' == child.tag:
         if self.inBlock:
           number = self.block_number(self.inBlockType)
@@ -216,7 +227,7 @@ class ReferencesExtension(markdown.Extension):
   def extendMarkdown(self,md,md_globals):
     self.md = md
     self.md.TOC = TOCNode(root=True)
-    extNumbering = BlockNumberingProcessor(md)
+    extNumbering = BlockNumberingProcessor(md, self.config.get('number_referenced_only',False), self.config.get('number_by_type',False))
     md.inlinePatterns.add('references', ReferencesPattern(), '_begin')
     md.inlinePatterns.add('anchors', AnchorPattern(), '_begin')
     md.treeprocessors.add('blocknumbering',extNumbering, '>inline')

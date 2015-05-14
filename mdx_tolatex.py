@@ -69,6 +69,8 @@ class laTeXRenderer(object):
         if 'block' in classes:
           classes.remove('block')
           environment_type = classes[0].lower()
+          if 'do_not_number' in classes and environment_type != 'proof':
+            environment_type +='*'
           block_name_tag = get_child_by_css_selector(child, '.block_name')
           block_refs_tag = get_child_by_css_selector(child, '.block_references')
           name_ref = []
