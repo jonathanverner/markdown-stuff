@@ -9,7 +9,7 @@ import lxml
 import lxml.etree
 from lxml.cssselect import CSSSelector
 
-from  mdx_tolatex import laTeXRenderer
+from mdx_tolatex import laTeXRenderer
 from mdx_defs import build_headings
 from postprocess import build_sections
 from utils import get_by_id
