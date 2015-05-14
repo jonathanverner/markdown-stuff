@@ -61,12 +61,12 @@ def _latex_from_blocktypes(types,position):
     for bt in types:
         if bt in DefinitionBlockProcessor.THM_STYLE:
             ret += u'\\newtheorem{'+bt.lower()+u'}[subsection]{'+bt[0].upper()+bt[1:].lower()+u'}\n';
-            ret += u'\\newtheorem{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+            ret += u'\\newtheorem*{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
     ret += u'\\theoremstyle{definition}\n'
     for bt in types:
         if bt not in DefinitionBlockProcessor.PROOFS and bt not in DefinitionBlockProcessor.THM_STYLE:
             ret += u'\\newtheorem{'+bt.lower()+u'}[subsection]{'+bt[0].upper()+bt[1:].lower()+u'}\n';
-            ret += u'\\newtheorem{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
+            ret += u'\\newtheorem*{'+bt.lower()+u'*}{'+bt[0].upper()+bt[1:].lower()+u'}\n';
     return ret
 
 
@@ -93,7 +93,7 @@ class DefinitionBlockProcessor(BlockProcessor):
 
   START_RE = re.compile(r"""
       ^\s*                            # A definition block starts with possible whitespace,
-      (?P<type>[^0-9\s:*]*)           # then comes the block type (e.g. theorem, example, etc.),
+      (?P<type>[^0-9\s:]*)            # then comes the block type (e.g. theorem, example, etc.),
       (?P<do_not_number>\*)*          # an optional asterix indicating the block should not be numbered
       \s*
       (?:\((?P<name>[^)]*)\))*        # optional name in parenthesis,
