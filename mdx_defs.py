@@ -93,7 +93,7 @@ class DefinitionBlockProcessor(BlockProcessor):
 
   START_RE = re.compile(r"""
       ^\s*                            # A definition block starts with possible whitespace,
-      (?P<type>[^0-9\s:]*)            # then comes the block type (e.g. theorem, example, etc.),
+      (?P<type>[^0-9\s:\\()\][]*)          # then comes the block type (e.g. theorem, example, etc.),
       (?P<do_not_number>\*)*          # an optional asterix indicating the block should not be numbered
       \s*
       (?:\((?P<name>[^)]*)\))*        # optional name in parenthesis,
