@@ -28,15 +28,14 @@
 \relpenalty=9999
 \binoppenalty=9999
 \newcommand{\incfile}[3]{%
-\IfFileExists{ {% if resources_location %}{{resources_location}}/{% endif %}#2}{
+\IfFileExists{ {% if resources_location %}{{resources_location}}/{% endif %}#2}{%
 \marginpar{%
 \attachfile[author={ {{author}} },
             description={#2},
             mimetype={#3},
             print=false,
             icon={Paperclip}]{%
-{%if resources_location %}{{resources_location}}/{% endif %}#2%
-}
+{% if resources_location %}{{resources_location}}/{% endif %}#2}
 }
 }{}
 }
