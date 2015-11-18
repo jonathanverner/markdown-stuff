@@ -1,5 +1,5 @@
 {% autoescape off %}
-\documentclass[a4paper,10pt,oneside]{article}
+\documentclass[a4paper,10pt,oneside]{amsart}
 \usepackage{textalpha} % For unicode greek letters in normal text
 \usepackage{latexsym}
 \usepackage{amsmath}
@@ -18,7 +18,11 @@
             pdfkeywords={ {{ keywords }} }
             ]{hyperref}
 \catcode`\&=4
-\usepackage[margin=1.5cm]{geometry}
+{% if margin %}
+\usepackage[margin={{margin}}]{geometry}
+{% else %}
+\usepackage[margin=3cm]{geometry}
+{% endif %}
 \usepackage[utf8]{inputenc}
 \usepackage{attachfile}
 % \usepackage{palatino}
