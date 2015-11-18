@@ -60,7 +60,11 @@
 {% endif %}{% if author %}
 \author{ {{ author }} }
 {% endif %}{% if email %}
-%\email{ {{ email }} }
+\email{ {{ email }} }
+{% endif %}{% if abstract %}
+\begin{abstract}
+{{ abstract }}
+\end{abstract}
 {% endif %}
 \catcode`\&=4
 
