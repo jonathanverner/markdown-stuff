@@ -11,11 +11,11 @@
 \usepackage{xcolor}
 \definecolor{svlinks}{rgb}{.0,0.3,0.6} %tmavě modrá
 \catcode`\&=11
-\usepackage[bookmarks, colorlinks=true,pdfhighlight=/O,linkcolor=svlinks,urlcolor=svlinks,
-            pdftitle={ {{ title }}  },
-            pdfauthor={ {{ author }} },
-            pdfsubject={  {{ subject }} },
-            pdfkeywords={ {{ keywords }} }
+\usepackage[bookmarks,colorlinks=true,pdfhighlight=/O,linkcolor=svlinks,urlcolor=svlinks,citecolor=svlinks,
+            pdftitle={{'{'}}{{ title }}{{'}'}},
+            pdfauthor={{'{'}}{{ author }}{{'}'}},
+            pdfsubject={{'{'}}{{ subject }}{{'}'}},
+            pdfkeywords={{'{'}}{{ keywords }}{{'}'}}
             ]{hyperref}
 \catcode`\&=4
 {% if margin %}
@@ -32,9 +32,9 @@
 \relpenalty=9999
 \binoppenalty=9999
 \newcommand{\incfile}[3]{%
-\IfFileExists{ {% if resources_location %}{{resources_location}}/{% endif %}#2}{%
+\IfFileExists{{'{'}}{% if resources_location %}{{resources_location}}/{% endif %}#2}{%
 \marginpar{%
-\attachfile[author={ {{author}} },
+\attachfile[author={{'{'}}{{author}}{{'}'}},
             description={#2},
             mimetype={#3},
             print=false,
@@ -58,13 +58,13 @@
 
 \catcode`\&=11
 {% if title %}
-\title{ {{ title }} }
+\title{{'{'}}{{ title }}{{'}'}}
 {% if date %}
-\date{ {{ date }} }
+\date{{'{'}}{{ date }}{{'}'}}
 {% endif %}{% if author %}
-\author{ {{ author }} }
+\author{{'{'}}{{ author }}{{'}'}}
 {% endif %}{% if email %}
-\email{ {{ email }} }
+\email{{'{'}}{{ email }}{{'}'}}
 {% endif %}{% if abstract %}
 \begin{abstract}
 {{ abstract }}
