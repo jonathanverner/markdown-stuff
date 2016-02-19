@@ -103,7 +103,7 @@ def render_md( md_text, tree = None, ext_config = {} ):
              - parsed lxml.etree (@tree='lxml')
              - parsed markdown.util.etree (@tree='md')
     """
-    md = markdown.Markdown(extensions=['extra','defs','mymathjax','wikilinks','headerid','references','meta'],extension_configs=ext_config)
+    md = markdown.Markdown(extensions=['extra','defs','mymathjax','wikilinks','headerid','references','bibliography','meta'],extension_configs=ext_config)
     doc = mdx_macros.pre_process(md_text)
     html = md.convert(doc)
     if tree:
@@ -289,6 +289,12 @@ def main():
   if 'image_path' in dct:
       exp = re.compile(r'(<img\s*[^>]*)\s*src=[\'"]([^\'"]*)[\'"]([^>]*>)')
       dct['content']=exp.sub(r'\1src="'+dct['image_path']+r'\2"\3',dct['content'])
+
+
+  if args.document.name.endswith('.md'):
+      dct['basename'] = args.document.name[:-3]
+  else:
+      dct['basename'] = args.document.name
 
   output = render_template(template, dct)
 

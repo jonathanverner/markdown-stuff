@@ -87,7 +87,7 @@ class laTeXRenderer(object):
           output +='\n\\begin{'+environment_type+'}'+name_ref+'\n'+self._render(child).strip()+'\n\\end{'+environment_type+'}\n'
       elif 'qed' in child.get('class',''):
           if 'nested' in child.get('class',''):
-              output+=r'\renewcommand{\qedsymbol}{$\blacksquare$}'+"\n"
+              output = output.strip()+r'\renewcommand{\qedsymbol}{$\blacksquare$}'+"\n"
       elif child.tag == 'em':
         output+='\\emph{'+self._render(child).strip()+'}'
       elif child.tag == 'strong':
@@ -95,6 +95,9 @@ class laTeXRenderer(object):
       elif child.tag == 'ref':
         key = child.get('key','')
         output+='\\ref{'+key+'}'
+      elif child.tag == 'bib':
+        key = child.get('key','')
+        output+='\\cite{'+key+'}'
       elif child.tag == 'a':
           # FIXME:
           # Here we are relying on the fact that
