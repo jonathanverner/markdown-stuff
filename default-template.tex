@@ -1,5 +1,5 @@
 {% autoescape off %}
-\documentclass[a4paper,10pt,oneside]{amsart}
+\documentclass[a4paper,{% if fontsize %}{{fontsize}}{% else %}10pt{% endif %},oneside]{amsart}
 \usepackage{textalpha} % For unicode greek letters in normal text
 \usepackage{latexsym}
 \usepackage{amsmath}
