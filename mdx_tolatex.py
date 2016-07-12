@@ -40,6 +40,7 @@ class laTeXRenderer(object):
       ret = ret.replace('_','\\'+'_')
       ret = ret.replace('&','\\'+'&')
       ret = ret.replace('%','\\'+'%')
+      ret = ret.replace('\\','\\textbackslash{}')
     return ret
 
   def _ignore_node(self,node):
