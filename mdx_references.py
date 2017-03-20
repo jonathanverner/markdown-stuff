@@ -226,12 +226,18 @@ class BlockNumberingProcessor(Treeprocessor):
 
 
 class ReferencesExtension(markdown.Extension):
-  def __init__(self,configs):
-    super(ReferencesExtension,self).__init__(configs)
-    cfg = {}
-    for (key,val) in self.config:
-      cfg[key] = val
-    self.config=cfg
+    def __init__(self, configs):
+        self.config['number_referenced_only'] = [False, False]
+        self.config['number_by_type'] = [False, False]
+        super(ReferencesExtension, self).__init__(configs)
+        cfg = {}
+        try:
+            for (key, val) in self.config:
+                cfg[key] = val
+        except:
+            for (key, val) in self.config.items():
+                cfg[key] = val[0]
+        self.config = cfg
 
     def extendMarkdown(self, md, md_globals):
         self.md = md
@@ -241,5 +247,9 @@ class ReferencesExtension(markdown.Extension):
         md.inlinePatterns.add('anchors', AnchorPattern(), '_begin')
         md.treeprocessors.add('blocknumbering', extNumbering, '>inline')
 
-def makeExtension(configs=[]):
-  return ReferencesExtension(configs=configs)
+
+def makeExtension(*args, **configs):
+    if len(args) > 0 and isinstance(args[0], dict):
+        return ReferencesExtension(configs=args[0])
+    else:
+        return ReferencesExtension(configs=configs)

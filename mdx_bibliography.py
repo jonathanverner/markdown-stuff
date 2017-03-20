@@ -38,16 +38,24 @@ class BibliographyPattern(Pattern):
 
 
 class BibliographyExtension(markdown.Extension):
-  def __init__(self,configs):
-    super(BibliographyExtension,self).__init__(configs)
-    cfg = {}
-    for (key,val) in self.config:
-      cfg[key] = val
-    self.config=cfg
+    def __init__(self, configs):
+        super(BibliographyExtension, self).__init__(configs)
+        cfg = {}
+        try:
+            for (key, val) in self.config:
+                cfg[key] = val
+        except:
+            for (key, val) in self.config.items():
+                cfg[key] = val[0]
+        self.config = cfg
 
     def extendMarkdown(self, md, md_globals):
         self.md = md
         md.inlinePatterns.add('bibreferences', BibliographyPattern(), '_begin')
 
-def makeExtension(configs=[]):
-  return BibliographyExtension(configs=configs)
+
+def makeExtension(*args, **configs):
+    if len(args) > 0 and isinstance(args[0], dict):
+        return BibliographyExtension(configs=args[0])
+    else:
+        return BibliographyExtension(configs=configs)
