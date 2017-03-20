@@ -45,7 +45,7 @@ def render_template(tpl, context):
         return dtpl.render(django.template.Context(context))
 
     elif template_system == "JINJA2":
-        print jinja_env.extensions
+        print(jinja_env.extensions)
         dtpl = jinja_env.from_string(tpl)
         return dtpl.render(context)
     else:
@@ -79,7 +79,7 @@ def parse_html( html, tree ):
             return lxml.etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'), lxml.etree.HTMLParser(encoding='utf-8'))
         else:
             return etree.fromstring((u'<html><head></head><body>'+html+u'</body></html>').encode('utf-8'))
-    except Exception, e:
+    except Exception as e:
         ln = e.position[0]-1
         col = e.position[1]
         lns = html.split('\n')
@@ -159,7 +159,7 @@ def filter(css_selector, lxmltree, include_references = True):
                     ret.append(ref_parent)
             return ret
         return selector(lxmltree)
-    except Exception, e:
+    except Exception as e:
         logger.critical("Error parsing filter: "+css_selector+" ("+str(e)+")")
         return []
 
@@ -234,7 +234,7 @@ def main():
   if args.query:
       attrs = args.attrs.split(',')
       for e in query(args.query, lxml_tree):
-          print ','.join([ attr+'='+e[attr] for attr in attrs if attr in e ])
+          print(','.join([ attr+'='+e[attr] for attr in attrs if attr in e ]))
       return
 
   if args.filter:
@@ -251,7 +251,7 @@ def main():
         for opt in args.renderoptions.split(','):
             key,value = opt.split('=')
             render_options[key]=eval(value)
-    except Exception, e:
+    except Exception as e:
         logger.warn('Bad render options: '+args.renderoptions+' ('+str(e)+')')
 
   if args.format == 'html':
@@ -311,7 +311,7 @@ def main():
     out_fname=base+extensions[args.format]
     open(out_fname,'w').write(output.encode('utf-8'))
   else:
-    print output.encode('utf-8')
+    print(output.encode('utf-8'))
 
 if __name__ == "__main__":
   main()
